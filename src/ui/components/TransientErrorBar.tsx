@@ -22,15 +22,17 @@ export function TransientErrorBar({ errors, onRetry }: TransientErrorBarProps) {
       gap: '8px',
       fontSize: '0.9em',
     }}>
+      {/* TODO(i18n): wire up t() */}
       <span>
-        ⚠ {errors.length} 个文件本次未索引(可重试)
+        ⚠ {errors.length} file(s) were not indexed this run (retry available)
       </span>
       <button
         onClick={onRetry}
         style={{ padding: '2px 10px', fontSize: '0.9em' }}
         title={errors.slice(0, 5).map(e => `${e.path}: ${e.message}`).join('\n')}
       >
-        重试
+        {/* TODO(i18n): wire up t() */}
+        Retry
       </button>
     </div>
   );

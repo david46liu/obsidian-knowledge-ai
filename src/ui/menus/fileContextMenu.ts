@@ -35,20 +35,24 @@ export function attachFileContextMenu(
     ?? owners[0].id;
 
   menu.addItem(item => {
-    item.setTitle('在 Notebook AI 查看 chunks').setIcon('list-tree')
+    // TODO(i18n): wire up t()
+    item.setTitle('View chunks in Knowledge AI').setIcon('list-tree')
       .onClick(() => {
         deps.services.openChunksInspector(file.path, targetNotebookId);
       });
   });
 
   menu.addItem(item => {
-    item.setTitle('重新提取此文件').setIcon('refresh-cw')
+    // TODO(i18n): wire up t()
+    item.setTitle('Re-extract this file').setIcon('refresh-cw')
       .onClick(async () => {
         try {
           await deps.services.invalidateFileHash(file.path);
-          new Notice(`已标记 ${file.name} 重新提取,下次重索引时生效`);
+          // TODO(i18n): wire up t()
+          new Notice(`Marked ${file.name} for re-extraction. Effective on next reindex.`);
         } catch (e) {
-          new Notice(`失败:${e instanceof Error ? e.message : String(e)}`);
+          // TODO(i18n): wire up t()
+          new Notice(`Failed: ${e instanceof Error ? e.message : String(e)}`);
         }
       });
   });

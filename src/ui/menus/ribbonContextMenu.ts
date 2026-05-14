@@ -22,11 +22,13 @@ export function showRibbonContextMenu(
 
   if (notebooks.length === 0) {
     menu.addItem(item =>
-      item.setTitle('(尚无 Notebook)').setDisabled(true)
+      // TODO(i18n): wire up t()
+      item.setTitle('(No notebooks yet)').setDisabled(true)
     );
   } else {
     menu.addItem(item =>
-      item.setTitle('📓 当前 Notebook').setIsLabel(true)
+      // TODO(i18n): wire up t()
+      item.setTitle('📓 Active Notebook').setIsLabel(true)
     );
     for (const nb of notebooks) {
       menu.addItem(item =>
@@ -34,23 +36,27 @@ export function showRibbonContextMenu(
           .setIcon(nb.id === activeId ? 'check' : '')
           .onClick(() => {
             deps.setActiveNotebookId(nb.id);
-            new Notice(`切换到 ${nb.name}`);
+            // TODO(i18n): wire up t()
+            new Notice(`Switched to ${nb.name}`);
           })
       );
     }
     menu.addSeparator();
     menu.addItem(item => {
-      item.setTitle('⚙ 重新索引当前 Notebook')
+      // TODO(i18n): wire up t()
+      item.setTitle('⚙ Reindex active Notebook')
         .setIcon('refresh-cw');
       if (!activeId) item.setDisabled(true);
       else item.onClick(() => {
         deps.services.reindex(activeId).catch(e =>
-          new Notice(`失败:${e instanceof Error ? e.message : String(e)}`)
+          // TODO(i18n): wire up t()
+          new Notice(`Failed: ${e instanceof Error ? e.message : String(e)}`)
         );
       });
     });
     menu.addItem(item =>
-      item.setTitle('🌐 重新索引全部 Notebook').setIcon('refresh-ccw')
+      // TODO(i18n): wire up t()
+      item.setTitle('🌐 Reindex all Notebooks').setIcon('refresh-ccw')
         .onClick(() => deps.reindexAll())
     );
   }
@@ -58,7 +64,8 @@ export function showRibbonContextMenu(
   // I4 (per spec §8.3):打开 Settings tab
   menu.addSeparator();
   menu.addItem(item =>
-    item.setTitle('⚙ 设置').setIcon('settings')
+    // TODO(i18n): wire up t()
+    item.setTitle('⚙ Settings').setIcon('settings')
       .onClick(() => deps.openSettings())
   );
 

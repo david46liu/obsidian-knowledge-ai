@@ -7,11 +7,15 @@ import { ArtifactCard } from 'src/ui/components/ArtifactCard';
 import { MindMapViewer } from 'src/ui/components/MindMapViewer';
 import { PptViewer } from 'src/ui/components/PptViewer';
 import type { Artifact, ArtifactKind } from 'src/types/artifact';
+import { t } from 'src/i18n';
 
-const PHASE_LABEL: Record<string, string> = {
-  retrieving: '检索中...',
-  generating: '生成中...',
-};
+function phaseLabel(phase: string): string {
+  switch (phase) {
+    case 'retrieving': return t('chat.phase.retrieving');
+    case 'generating': return t('chat.phase.generating');
+    default: return phase;
+  }
+}
 
 export function ArtifactsTab() {
   const notebookId = useNotebookAIStore(s => s.activeNotebookId);
@@ -31,7 +35,7 @@ export function ArtifactsTab() {
   } = useArtifacts(notebookId);
 
   if (!notebookId) {
-    return <div style={{ padding: '16px' }}>请先在设置页选择 Notebook 并打开</div>;
+    return <div style={{ padding: '16px' }}>{t('chat.empty')}</div>;
   }
 
   return (
@@ -45,12 +49,12 @@ export function ArtifactsTab() {
         />
         {phase.phase !== 'idle' && phase.phase !== 'error' && (
           <div style={{ color: 'var(--text-muted)', fontSize: '0.85em', marginTop: '4px' }}>
-            {PHASE_LABEL[phase.phase] ?? phase.phase}
+            {phaseLabel(phase.phase)}
           </div>
         )}
         {phase.phase === 'error' && phase.error && (
           <div style={{ color: 'var(--color-red)', fontSize: '0.85em', marginTop: '4px' }}>
-            错误: {phase.error}
+            {t('common.error')}: {phase.error}
           </div>
         )}
       </div>
@@ -76,15 +80,15 @@ export function ArtifactsTab() {
                 fontStyle: 'italic',
               }}
             >
-              <strong>生成中:{streamingKind}</strong>
+              <strong>{t('artifact.streamingTitle', { kind: streamingKind })}</strong>
               <small style={{ display: 'block', color: 'var(--text-muted)', marginTop: '2px' }}>
-                {draftContent.length} 字符 / {draftCitations.length} 引用
+                {t('artifact.streamingStats', { chars: draftContent.length, citations: draftCitations.length })}
               </small>
             </div>
           )}
           {list.length === 0 && !streamingKind && (
             <div style={{ color: 'var(--text-muted)', padding: '12px', textAlign: 'center' }}>
-              暂无产物,使用上方按钮生成
+              {t('artifact.empty')}
             </div>
           )}
           {list.map(a => (
@@ -101,8 +105,8 @@ export function ArtifactsTab() {
         <div style={{ width: '60%', overflowY: 'auto', padding: '12px' }}>
           {streamingKind ? (
             <ArtifactReader
-              title={`生成中:${streamingKind}`}
-              content={draftContent || '(等待 token...)'}
+              title={t('artifact.streamingTitle', { kind: streamingKind })}
+              content={draftContent || t('artifact.streamingPlaceholder')}
               citations={draftCitations}
               truncated={draftTruncated}
               kind={streamingKind ?? undefined}
@@ -120,7 +124,7 @@ export function ArtifactsTab() {
             />
           ) : (
             <div style={{ color: 'var(--text-muted)', padding: '12px' }}>
-              选择左侧的产物以查看
+              {t('artifact.emptyReader')}
             </div>
           )}
         </div>
@@ -158,7 +162,7 @@ function ArtifactReader({
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      new Notice('复制失败,请手动选择文本');
+      new Notice(t('artifact.copyFailed'));
     }
   };
 
@@ -171,7 +175,7 @@ function ArtifactReader({
         {isMd && !draft && content && (
           <button
             onClick={handleCopy}
-            title="复制全文 markdown 到剪贴板"
+            title={t('artifact.copyAllTitle')}
             style={{
               fontSize: '0.85em',
               padding: '4px 10px',
@@ -179,7 +183,7 @@ function ArtifactReader({
               cursor: 'pointer',
             }}
           >
-            {copied ? '已复制 ✓' : '复制全文'}
+            {copied ? t('common.copied') : t('common.copyAll')}
           </button>
         )}
       </div>
@@ -190,9 +194,9 @@ function ArtifactReader({
           {truncated && (
             <span
               style={{ marginLeft: '8px', color: 'var(--color-orange)', cursor: 'help' }}
-              title="资料源超过单次喂给 LLM 的上限,只取了前面一部分文档生成。输出内容本身完整,但可能漏掉后段文档的信息。"
+              title={t('artifact.materialsTruncatedTitle')}
             >
-              · 资料截断
+              · {t('artifact.materialsTruncated')}
             </span>
           )}
         </div>
@@ -236,7 +240,7 @@ function ArtifactMarkdown({
     el.empty();
     const component = new Component();
     component.load();
-    void MarkdownRenderer.render(services.app, content || '_(等待 token...)_', el, '', component)
+    void MarkdownRenderer.render(services.app, content || `_${t('artifact.streamingPlaceholder')}_`, el, '', component)
       .then(() => {
         if ((citations?.length ?? 0) > 0) {
           replaceCitations(el, citations!, services.openVaultFile);
@@ -280,7 +284,7 @@ function replaceCitations(
         const a = document.createElement('a');
         a.href = '#';
         a.textContent = `[${idx}]`;
-        a.title = `${citation.headingPath.join(' > ') || '(无标题)'} — ${citation.filePath}\n\n${citation.preview}`;
+        a.title = `${citation.headingPath.join(' > ') || t('citation.untitled')} — ${citation.filePath}\n\n${citation.preview}`;
         a.style.color = 'var(--interactive-accent)';
         a.style.textDecoration = 'none';
         a.style.padding = '0 2px';

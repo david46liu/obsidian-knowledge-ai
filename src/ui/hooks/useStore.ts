@@ -154,6 +154,9 @@ export interface PluginServices {
   };
   /** 当前 summary 覆盖率(用于设置页展示) */
   getSummaryCoverage?: (notebookId: NotebookId) => Promise<{ total: number; withSummary: number }>;
+
+  /** 持久化 UI 语言到 pluginData.ui.locale 并立即调用 setLocale。下次重载完整生效。 */
+  setLocale?: (locale: 'en' | 'zh-CN') => Promise<void>;
 }
 
 export const PluginServicesContext = React.createContext<PluginServices | null>(null);

@@ -8,7 +8,8 @@ interface Props {
 
 export function CitationLink({ citation }: Props) {
   const services = usePluginServices();
-  const tooltip = `${citation.headingPath.join(' > ') || '(无标题)'} — ${citation.filePath}\n\n${citation.preview}`;
+  // TODO(i18n): wire up t()
+  const tooltip = `${citation.headingPath.join(' > ') || '(untitled)'} — ${citation.filePath}\n\n${citation.preview}`;
   return (
     <a
       href="#"

@@ -5,6 +5,7 @@ import { useIndexProgress } from 'src/ui/hooks/useIndexProgress';
 import { TransientErrorBar } from 'src/ui/components/TransientErrorBar';
 import { PersistentErrorBar } from 'src/ui/components/PersistentErrorBar';
 import { usePluginServices } from 'src/ui/hooks/useStore';
+import { t } from 'src/i18n';
 
 interface NotebookCardProps {
   notebook: Notebook;
@@ -34,16 +35,16 @@ export function NotebookCard({ notebook, onOpen, onReindex, onEdit, onDelete, ev
           <div style={{ color: 'var(--text-muted)', fontSize: '0.85em' }}>
             {notebook.sources[0]?.path}
             {notebook.stats && (
-              <span> · {notebook.stats.fileCount} 文件 · {notebook.stats.chunkCount} chunks</span>
+              <span> · {t('notebook.statsFiles', { count: notebook.stats.fileCount })} · {t('notebook.statsChunks', { count: notebook.stats.chunkCount })}</span>
             )}
           </div>
         </div>
         <div style={{ display: 'flex', gap: '4px' }}>
-          <button onClick={() => onOpen(notebook.id)}>打开</button>
-          <button onClick={() => onReindex(notebook.id)}>重新索引</button>
-          <button onClick={() => onEdit(notebook)}>编辑</button>
-          <button onClick={() => { if (window.confirm(`删除 ${notebook.name}？`)) onDelete(notebook.id); }}>
-            删除
+          <button onClick={() => onOpen(notebook.id)}>{t('notebook.action.open')}</button>
+          <button onClick={() => onReindex(notebook.id)}>{t('notebook.action.reindex')}</button>
+          <button onClick={() => onEdit(notebook)}>{t('notebook.action.edit')}</button>
+          <button onClick={() => { if (window.confirm(t('notebook.deleteConfirm', { name: notebook.name }))) onDelete(notebook.id); }}>
+            {t('notebook.action.delete')}
           </button>
         </div>
       </div>
@@ -146,16 +147,16 @@ function SummarySection({ notebookId, eventBus }: { notebookId: NotebookId; even
     <div style={{ marginTop: '6px', fontSize: '0.85em', color: 'var(--text-muted)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <span>
-          摘要 {coverage ? `${coverage.withSummary}/${coverage.total}` : '...'}
+          {t('notebook.summary.label')} {coverage ? t('notebook.summary.fraction', { covered: coverage.withSummary, total: coverage.total }) : t('notebook.summary.loading')}
         </span>
         {isRunning
-          ? <button onClick={() => state.cancel?.()}>取消</button>
+          ? <button onClick={() => state.cancel?.()}>{t('notebook.summary.cancel')}</button>
           : <>
               <button onClick={start} disabled={!coverage || coverage.total === coverage.withSummary}>
-                {coverage && coverage.total > coverage.withSummary ? '补齐摘要' : '已覆盖'}
+                {coverage && coverage.total > coverage.withSummary ? t('notebook.summary.backfill') : t('notebook.summary.allCovered')}
               </button>
-              <label title="并发越高越快,但遇到 429 / engine_overloaded 概率也越高。带指数退避重试">
-                并发 <input
+              <label title={t('notebook.summary.concurrencyTitle')}>
+                {t('notebook.summary.concurrency')} <input
                   type="number"
                   min={1}
                   max={8}
@@ -167,10 +168,10 @@ function SummarySection({ notebookId, eventBus }: { notebookId: NotebookId; even
             </>
         }
         {state.phase === 'done' && (
-          <span>完成 — 失败 {state.failed}</span>
+          <span>{t('notebook.summary.done', { failed: state.failed })}</span>
         )}
         {state.phase === 'error' && (
-          <span style={{ color: 'var(--color-red)' }}>错误: {state.error}</span>
+          <span style={{ color: 'var(--color-red)' }}>{t('notebook.summary.errorPrefix', { error: state.error ?? '' })}</span>
         )}
       </div>
       {isRunning && (
@@ -187,8 +188,12 @@ function SummarySection({ notebookId, eventBus }: { notebookId: NotebookId; even
             />
           </div>
           <div style={{ fontSize: '0.8em', marginTop: '2px' }}>
-            {state.done}/{state.total} (in-flight {state.inFlight}, 失败 {state.failed}
-            {state.skipped > 0 ? `, 跳过 ${state.skipped} 无内容` : ''})
+            {t('notebook.summary.runningStats', {
+              done: state.done,
+              total: state.total,
+              inFlight: state.inFlight,
+              failed: state.failed,
+            })}{state.skipped > 0 ? t('notebook.summary.skippedSuffix', { skipped: state.skipped }) : ''}
           </div>
         </div>
       )}
@@ -202,9 +207,9 @@ function SummarySection({ notebookId, eventBus }: { notebookId: NotebookId; even
           borderRadius: '4px',
           wordBreak: 'break-all',
         }}>
-          最近一次错误: {state.lastError && state.lastError.trim()
-            ? state.lastError
-            : '(LLM 抛出空错误 — 详情请看 DevTools Console 中的 [summary failed for ...])'}
+          {state.lastError && state.lastError.trim()
+            ? t('notebook.summary.lastError', { error: state.lastError })
+            : t('notebook.summary.lastErrorEmpty')}
         </div>
       )}
     </div>

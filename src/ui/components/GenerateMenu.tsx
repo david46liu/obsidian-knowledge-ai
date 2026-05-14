@@ -25,14 +25,16 @@ export function GenerateMenu({ disabled, streamingKind, onGenerate, onCancel }: 
             key={it.kind}
             onClick={() => onGenerate(it.kind)}
             disabled={disabled || !!streamingKind}
-            title={isCurrent ? '生成中...' : `生成${it.label}`}
+            // TODO(i18n): wire up t()
+            title={isCurrent ? 'Generating…' : `Generate ${it.label}`}
           >
             {isCurrent ? `${it.label}...` : it.label}
           </button>
         );
       })}
       {streamingKind && onCancel && (
-        <button onClick={onCancel} style={{ marginLeft: 'auto' }}>取消</button>
+        // TODO(i18n): wire up t()
+        <button onClick={onCancel} style={{ marginLeft: 'auto' }}>Cancel</button>
       )}
     </div>
   );

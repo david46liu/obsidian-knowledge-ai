@@ -9,14 +9,15 @@ interface Props {
   onExport(a: Artifact): Promise<{ vaultPath: string }>;
 }
 
+// TODO(i18n): wire up t()
 const KIND_LABEL: Record<Artifact['kind'], string> = {
-  'summary': '摘要',
-  'study-guide': '学习指南',
-  'timeline': '时间线',
+  'summary': 'Summary',
+  'study-guide': 'Study guide',
+  'timeline': 'Timeline',
   'faq': 'FAQ',
-  'briefing': '简报',
-  'mind-map': '思维导图',
-  'ppt': 'PPT 幻灯片',
+  'briefing': 'Briefing',
+  'mind-map': 'Mind map',
+  'ppt': 'Slide deck',
 };
 
 export function ArtifactCard({ artifact, active, onOpen, onDelete, onExport }: Props) {
@@ -29,11 +30,13 @@ export function ArtifactCard({ artifact, active, onOpen, onDelete, onExport }: P
     try {
       const { vaultPath } = await onExport(artifact);
       // eslint-disable-next-line no-alert
-      alert(`已导出到 ${vaultPath}`);
+      // TODO(i18n): wire up t()
+      alert(`Exported to ${vaultPath}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       // eslint-disable-next-line no-alert
-      alert(`导出失败: ${msg}`);
+      // TODO(i18n): wire up t()
+      alert(`Export failed: ${msg}`);
     } finally {
       setExporting(false);
     }
@@ -42,7 +45,8 @@ export function ArtifactCard({ artifact, active, onOpen, onDelete, onExport }: P
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     // eslint-disable-next-line no-alert
-    if (confirm(`删除「${artifact.title}」?`)) {
+    // TODO(i18n): wire up t()
+    if (confirm(`Delete "${artifact.title}"?`)) {
       onDelete(artifact);
     }
   };
@@ -69,19 +73,22 @@ export function ArtifactCard({ artifact, active, onOpen, onDelete, onExport }: P
         <small style={{ color: 'var(--text-muted)' }}>
           {new Date(artifact.generatedAt).toLocaleString()}
           {artifact.truncated && (
+            /* TODO(i18n): wire up t() */
             <span
               style={{ color: 'var(--color-orange)', marginLeft: '6px', cursor: 'help' }}
-              title="资料源被截断(只喂了前部分文档给 LLM),输出本身完整。如想覆盖更全,可缩小 notebook 范围。"
+              title="Source documents were truncated (only the leading portion was sent to the LLM). The output itself is complete. Narrow the notebook scope for fuller coverage."
             >
-              (资料截断)
+              (sources truncated)
             </span>
           )}
         </small>
         <div style={{ display: 'flex', gap: '4px' }}>
-          <button onClick={handleExport} disabled={exporting} title="导出到 vault">
-            {exporting ? '导出中' : '导出'}
+          {/* TODO(i18n): wire up t() */}
+          <button onClick={handleExport} disabled={exporting} title="Export to vault">
+            {exporting ? 'Exporting…' : 'Export'}
           </button>
-          <button onClick={handleDelete} title="删除">删除</button>
+          {/* TODO(i18n): wire up t() */}
+          <button onClick={handleDelete} title="Delete">Delete</button>
         </div>
       </div>
     </div>

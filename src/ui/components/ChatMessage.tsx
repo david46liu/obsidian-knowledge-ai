@@ -33,7 +33,8 @@ export function ChatMessage({ turn, isDraft, onSaveAsNote }: Props) {
         {isUser ? <PlainContent turn={turn} /> : <RenderedContent turn={turn} isDraft={isDraft} />}
       </div>
       {turn.cancelled && (
-        <small style={{ color: 'var(--text-muted)' }}>已取消</small>
+        // TODO(i18n): wire up t()
+        <small style={{ color: 'var(--text-muted)' }}>Cancelled</small>
       )}
       {canSave && (
         <button
@@ -48,9 +49,10 @@ export function ChatMessage({ turn, isDraft, onSaveAsNote }: Props) {
             cursor: 'pointer',
             color: 'var(--text-muted)',
           }}
-          title="把这条回答（含引用）保存为 vault 中的新笔记"
+          // TODO(i18n): wire up t()
+          title="Save this answer (with citations) as a new note in the vault"
         >
-          💾 保存为笔记
+          💾 Save as note
         </button>
       )}
     </div>
@@ -121,7 +123,8 @@ function replaceCitations(
         const a = document.createElement('a');
         a.href = '#';
         a.textContent = `[${idx}]`;
-        a.title = `${citation.headingPath.join(' > ') || '(无标题)'} — ${citation.filePath}\n\n${citation.preview}`;
+        // TODO(i18n): wire up t()
+        a.title = `${citation.headingPath.join(' > ') || '(untitled)'} — ${citation.filePath}\n\n${citation.preview}`;
         a.style.color = 'var(--interactive-accent)';
         a.style.textDecoration = 'none';
         a.style.padding = '0 2px';

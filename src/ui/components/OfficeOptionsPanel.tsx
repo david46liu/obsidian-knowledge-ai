@@ -17,8 +17,9 @@ export function OfficeOptionsPanel({ value, fileExtensions, onChange }: OfficeOp
   const toggleNotes = () => {
     const next = !includeNotes;
     if (next) {
+      // TODO(i18n): wire up t()
       const ok = window.confirm(
-        '启用后所有 .pptx 备注都将被索引,可能在 AI 回答中被引用。确认?'
+        'Enabling this will index speaker notes from all .pptx files, which may then be cited in AI answers. Continue?'
       );
       if (!ok) return;
     }
@@ -32,7 +33,8 @@ export function OfficeOptionsPanel({ value, fileExtensions, onChange }: OfficeOp
       padding: '12px',
       marginBottom: '8px',
     }}>
-      <legend style={{ padding: '0 6px', color: 'var(--text-muted)' }}>Office 解析选项</legend>
+      {/* TODO(i18n): wire up t() */}
+      <legend style={{ padding: '0 6px', color: 'var(--text-muted)' }}>Office parsing options</legend>
       <label style={{
         display: 'block',
         marginBottom: '4px',
@@ -44,16 +46,18 @@ export function OfficeOptionsPanel({ value, fileExtensions, onChange }: OfficeOp
           disabled={!pptxEnabled}
           onChange={toggleNotes}
         />
-        {' '}包含 PowerPoint 演讲者备注
+        {/* TODO(i18n): wire up t() */}
+        {' '}Include PowerPoint speaker notes
       </label>
+      {/* TODO(i18n): wire up t() */}
       <div style={{
         marginLeft: '20px',
         marginTop: '4px',
         color: 'var(--text-muted)',
         fontSize: '0.85em',
       }}>
-        ⚠ 备注常含未公开内容,启用后会被 RAG 检索并发送至 LLM。默认关闭。
-        {!pptxEnabled && ' (须先勾选 PowerPoint 格式)'}
+        ⚠ Speaker notes often contain private content. When enabled they are indexed by RAG and sent to the LLM. Off by default.
+        {!pptxEnabled && ' (Enable the PowerPoint format first.)'}
       </div>
     </fieldset>
   );

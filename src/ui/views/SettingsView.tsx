@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Provider, Source, Notebook, NotebookId } from 'src/types/data';
 import { useNotebookAIStore } from 'src/ui/hooks/useStore';
 import { usePluginServices } from 'src/ui/hooks/useStore';
+import { t, getLocale, AVAILABLE_LOCALES, type Locale } from 'src/i18n';
 import { EmbeddingSection, type VectorCoverage } from 'src/ui/components/EmbeddingSection';
 import { ImageSection } from 'src/ui/components/ImageSection';
 import { ProviderCard } from 'src/ui/components/ProviderCard';
@@ -217,40 +218,40 @@ export function SettingsView() {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <span>⚠️ API Key 以明文形式存储在插件数据目录中。请勿在共享设备上使用。</span>
-          <button onClick={() => services.setBannerDismissed(true)}>关闭</button>
+          <span>{t('plugin.banner.apiKeyWarning')}</span>
+          <button onClick={() => services.setBannerDismissed(true)}>{t('plugin.banner.dismiss')}</button>
         </div>
       )}
 
       {/* Section 2: API Providers */}
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          <h3 style={{ margin: 0 }}>API 服务商</h3>
+          <h3 style={{ margin: 0 }}>{t('settings.providers.heading')}</h3>
           <button onClick={() => { setEditingProvider(null); setShowProviderForm(!showProviderForm); }}>
-            {showProviderForm ? '取消' : '添加'}
+            {showProviderForm ? t('common.cancel') : t('common.add')}
           </button>
         </div>
 
         {showProviderForm && (
           <div style={{ border: '1px solid var(--background-modifier-border)', padding: '12px', borderRadius: '4px', marginBottom: '8px' }}>
             <div style={{ marginBottom: '8px' }}>
-              <label>名称</label>
+              <label>{t('settings.providers.displayName')}</label>
               <input type="text" value={providerDraft.displayName} onChange={e => setProviderDraft(d => ({ ...d, displayName: e.target.value }))} style={{ width: '100%' }} />
             </div>
             <div style={{ marginBottom: '8px' }}>
-              <label>Base URL</label>
+              <label>{t('settings.providers.baseUrl')}</label>
               <input type="text" value={providerDraft.baseUrl} onChange={e => setProviderDraft(d => ({ ...d, baseUrl: e.target.value }))} style={{ width: '100%' }} />
             </div>
             <div style={{ marginBottom: '8px' }}>
-              <label>API Key</label>
+              <label>{t('settings.providers.apiKey')}</label>
               <input type="password" value={providerDraft.apiKey} onChange={e => setProviderDraft(d => ({ ...d, apiKey: e.target.value }))} style={{ width: '100%' }} />
             </div>
             <div style={{ marginBottom: '8px' }}>
-              <label>默认模型</label>
+              <label>{t('settings.providers.defaultModel')}</label>
               <input type="text" value={providerDraft.defaultModel} onChange={e => setProviderDraft(d => ({ ...d, defaultModel: e.target.value }))} style={{ width: '100%' }} />
             </div>
             <div style={{ marginBottom: '8px' }}>
-              <label>超时 (ms)</label>
+              <label>{t('settings.providers.timeoutMs')}</label>
               <input type="number" value={providerDraft.timeoutMs} onChange={e => setProviderDraft(d => ({ ...d, timeoutMs: Number(e.target.value) }))} style={{ width: '100%' }} />
             </div>
             <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -261,9 +262,9 @@ export function SettingsView() {
                 onChange={e => setProviderDraft(d => ({ ...d, supportsEmbeddings: e.target.checked }))}
               />
               <label htmlFor="provider-supports-embeddings" style={{ cursor: 'pointer' }}>
-                支持 Embedding
+                {t('settings.providers.supportsEmbeddings')}
                 <span style={{ marginLeft: '8px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                  勾选后此 provider 会出现在向量检索的来源列表中
+                  {t('settings.providers.supportsEmbeddingsDesc')}
                 </span>
               </label>
             </div>
@@ -275,14 +276,14 @@ export function SettingsView() {
                 onChange={e => setProviderDraft(d => ({ ...d, supportsVision: e.target.checked }))}
               />
               <label htmlFor="provider-supports-vision" style={{ cursor: 'pointer' }}>
-                支持 Vision
+                {t('settings.providers.supportsVision')}
                 <span style={{ marginLeft: '8px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                  勾选后此 provider 可被用作图片索引的视觉理解任务
+                  {t('settings.providers.supportsVisionDesc')}
                 </span>
               </label>
             </div>
             <button onClick={editingProvider ? handleUpdateProvider : handleAddProvider}>
-              {editingProvider ? '保存' : '添加'}
+              {editingProvider ? t('common.save') : t('common.add')}
             </button>
           </div>
         )}
@@ -300,7 +301,7 @@ export function SettingsView() {
 
       {/* Section 3: Task Model Assignment */}
       <div style={{ marginBottom: '24px' }}>
-        <h3 style={{ margin: 0, marginBottom: '8px' }}>任务模型分配</h3>
+        <h3 style={{ margin: 0, marginBottom: '8px' }}>{t('settings.tasks.heading')}</h3>
         <TaskAssignmentPanel
           providers={providers}
           taskAssignments={taskAssignments}
@@ -312,7 +313,7 @@ export function SettingsView() {
 
       {/* Section 4: Vector Retrieval */}
       <div style={{ marginBottom: '24px' }}>
-        <h3 style={{ margin: 0, marginBottom: '8px' }}>向量检索</h3>
+        <h3 style={{ margin: 0, marginBottom: '8px' }}>{t('settings.vector.heading')}</h3>
         <EmbeddingSection
           config={embeddingConfig}
           providers={providers}
@@ -332,7 +333,7 @@ export function SettingsView() {
 
       {/* Section 4.5: Image Indexing */}
       <div style={{ marginBottom: '24px' }}>
-        <h3 style={{ margin: 0, marginBottom: '8px' }}>图片索引</h3>
+        <h3 style={{ margin: 0, marginBottom: '8px' }}>{t('settings.image.heading')}</h3>
         <ImageSection
           config={imageConfig}
           ocrStatus={ocrStatus}
@@ -349,7 +350,7 @@ export function SettingsView() {
       {/* Section 5: Notebooks */}
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          <h3 style={{ margin: 0 }}>Notebooks</h3>
+          <h3 style={{ margin: 0 }}>{t('settings.notebooks.heading')}</h3>
           <button onClick={() => {
             if (showNotebookForm) {
               setShowNotebookForm(false);
@@ -363,18 +364,18 @@ export function SettingsView() {
               setShowNotebookForm(true);
             }
           }}>
-            {showNotebookForm ? '取消' : '新建'}
+            {showNotebookForm ? t('common.cancel') : t('settings.notebooks.create')}
           </button>
         </div>
 
         {showNotebookForm && (
           <div style={{ border: '1px solid var(--background-modifier-border)', padding: '12px', borderRadius: '4px', marginBottom: '8px' }}>
             <div style={{ marginBottom: '8px' }}>
-              <label>名称</label>
+              <label>{t('settings.notebooks.name')}</label>
               <input type="text" value={notebookDraft.name} onChange={e => setNotebookDraft(d => ({ ...d, name: e.target.value }))} style={{ width: '100%' }} />
             </div>
             <div style={{ marginBottom: '8px' }}>
-              <label>文件夹</label>
+              <label>{t('settings.notebooks.folder')}</label>
               <FolderPicker
                 value={notebookDraft.folder}
                 folders={vaultFolders}
@@ -388,25 +389,25 @@ export function SettingsView() {
                   checked={notebookDraft.recursive}
                   onChange={e => setNotebookDraft(d => ({ ...d, recursive: e.target.checked }))}
                 />
-                {' '}包含子文件夹
+                {' '}{t('settings.notebooks.recursive')}
               </label>
             </div>
             <div style={{ marginBottom: '8px' }}>
-              <label>排除规则（每行一条；支持 <code>**/x</code> / <code>prefix*</code> / <code>*.ext</code> / 精确路径）</label>
+              <label>{t('settings.notebooks.excludeGlobsLabel')}</label>
               <textarea
                 value={notebookDraft.excludeGlobs}
                 onChange={e => setNotebookDraft(d => ({ ...d, excludeGlobs: e.target.value }))}
-                placeholder={'示例：\n**/templates/**\n**/_*.md\n*.tmp'}
+                placeholder={t('settings.notebooks.excludeGlobsPlaceholder')}
                 rows={4}
                 style={{ width: '100%', fontFamily: 'monospace' }}
               />
             </div>
             <div style={{ marginBottom: '8px' }}>
-              <label>System Prompt（可选；指导 AI 回答风格，留空使用默认）</label>
+              <label>{t('settings.notebooks.systemPromptLabel')}</label>
               <textarea
                 value={notebookDraft.systemPrompt}
                 onChange={e => setNotebookDraft(d => ({ ...d, systemPrompt: e.target.value }))}
-                placeholder={'示例：你是一名严谨的技术编辑助手，回答简洁专业，引用资料时务必标 [N]。'}
+                placeholder={t('settings.notebooks.systemPromptPlaceholder')}
                 rows={4}
                 style={{ width: '100%', fontFamily: 'monospace' }}
               />
@@ -433,7 +434,7 @@ export function SettingsView() {
               onChange={next => setOptionsState(s => setOfficeOptions(s, next))}
             />
             <button onClick={editingNotebook ? handleUpdateNotebook : handleAddNotebook}>
-              {editingNotebook ? '保存' : '创建'}
+              {editingNotebook ? t('common.save') : t('settings.notebooks.create')}
             </button>
           </div>
         )}
@@ -453,28 +454,51 @@ export function SettingsView() {
 
       {/* Section 5: Advanced */}
       <div>
-        <h3 style={{ margin: 0, marginBottom: '8px' }}>高级</h3>
+        <h3 style={{ margin: 0, marginBottom: '8px' }}>{t('settings.advanced.heading')}</h3>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button onClick={async () => {
             const id = notebooks[0]?.id;
-            if (!id) { window.alert('请先创建 Notebook'); return; }
+            if (!id) { window.alert(t('settings.advanced.exportNeedsNotebook')); return; }
             try {
               const r = await services.exportIndex(id);
-              window.alert(`索引已导出到: ${r.vaultPath}`);
+              window.alert(t('settings.advanced.exportOk', { path: r.vaultPath }));
             } catch (e) {
-              window.alert(`导出失败: ${e instanceof Error ? e.message : String(e)}`);
+              window.alert(t('settings.advanced.exportFailed', { error: e instanceof Error ? e.message : String(e) }));
             }
-          }}>导出索引</button>
+          }}>{t('settings.advanced.exportIndex')}</button>
           <button onClick={async () => {
-            if (!window.confirm('确定清除所有缓存?这会让所有 Notebook 重新索引')) return;
+            if (!window.confirm(t('settings.advanced.clearConfirm'))) return;
             try {
               await services.clearCache();
-              window.alert('缓存已清除,所有 Notebook 已标记为待重建');
+              window.alert(t('settings.advanced.clearOk'));
             } catch (e) {
-              window.alert(`清除失败: ${e instanceof Error ? e.message : String(e)}`);
+              window.alert(t('settings.advanced.clearFailed', { error: e instanceof Error ? e.message : String(e) }));
             }
-          }}>清除缓存</button>
-          <button onClick={() => services.openDevTools()}>打开 DevTools</button>
+          }}>{t('settings.advanced.clearCache')}</button>
+          <button onClick={() => services.openDevTools()}>{t('settings.advanced.openDevTools')}</button>
+        </div>
+      </div>
+
+      {/* Section 6: Language picker (always at the bottom so reload-required note is near it) */}
+      <div style={{ marginTop: '16px' }}>
+        <div className="setting-item">
+          <div className="setting-item-info">
+            <div className="setting-item-name">{t('settings.language')}</div>
+            <div className="setting-item-description">{t('settings.languageDesc')}</div>
+          </div>
+          <div className="setting-item-control">
+            <select
+              value={getLocale()}
+              onChange={async (e) => {
+                const next = e.target.value as Locale;
+                await services.setLocale?.(next);
+              }}
+            >
+              {AVAILABLE_LOCALES.map(l => (
+                <option key={l.value} value={l.value}>{l.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </div>

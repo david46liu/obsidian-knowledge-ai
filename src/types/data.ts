@@ -235,6 +235,8 @@ export interface PluginData {
   };
   ui?: {
     activeNotebookId?: NotebookId;
+    /** Persisted locale. If unset, falls back to Obsidian's moment.locale() then 'en'. */
+    locale?: 'en' | 'zh-CN';
   };
   embeddingConfig?: EmbeddingConfig;
   imageConfig?: ImageConfig;

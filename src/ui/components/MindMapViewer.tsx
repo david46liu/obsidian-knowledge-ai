@@ -144,7 +144,8 @@ export function MindMapViewer({ markdown, citations }: Props) {
             marginBottom: '8px',
           }}
         >
-          ⚠ AI 未输出严格大纲格式,显示原文
+          {/* TODO(i18n): wire up t() */}
+          ⚠ The AI did not produce a strict outline format. Showing raw output.
         </div>
         <pre style={{ whiteSpace: 'pre-wrap' }}>{markdown}</pre>
       </div>
@@ -180,7 +181,8 @@ export function MindMapViewer({ markdown, citations }: Props) {
             color: 'var(--text-muted)',
           }}
         >
-          <summary>解析警告 ({errors.length})</summary>
+          {/* TODO(i18n): wire up t() */}
+          <summary>Parser warnings ({errors.length})</summary>
           <ul>
             {errors.slice(0, 10).map((e, i) => (
               <li key={i}>{e}</li>
@@ -298,8 +300,9 @@ export function MindMapViewer({ markdown, citations }: Props) {
           color: 'var(--text-muted)',
         }}
       >
-        缩放:鼠标滚轮 · 平移:左键拖拽 · 折叠:点击节点(▼/▶) · 当前:
-        {scale.toFixed(2)}x · 节点:{layout!.nodes.length}
+        {/* TODO(i18n): wire up t() */}
+        Zoom: scroll · Pan: left-drag · Collapse: click a node (▼/▶) · Current:
+        {scale.toFixed(2)}x · Nodes: {layout!.nodes.length}
       </div>
     </div>
   );

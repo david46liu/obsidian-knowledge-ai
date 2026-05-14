@@ -18,7 +18,8 @@ export class NotebookFromFolderModal extends Modal {
 
   onOpen(): void {
     const folderName = this.folderPath.split('/').filter(Boolean).pop() ?? this.folderPath;
-    this.titleEl.setText(`新建 Notebook · ${this.folderPath}`);
+    // TODO(i18n): wire up t()
+    this.titleEl.setText(`New Notebook · ${this.folderPath}`);
     this.root = createRoot(this.contentEl);
     this.root.render(
       <NotebookFromFolderForm
@@ -63,10 +64,12 @@ function NotebookFromFolderForm({ folderPath, defaultName, services, onDone }: F
         enabled: true,   // I2: spec §8.1 要求 enabled:true
       });
       await services.updateNotebook(nb.id, { fileExtensions: exts });
-      new Notice(`已创建 Notebook "${name}"`);
+      // TODO(i18n): wire up t()
+      new Notice(`Created Notebook "${name}"`);
       onDone();
     } catch (e) {
-      new Notice(`创建失败:${e instanceof Error ? e.message : String(e)}`);
+      // TODO(i18n): wire up t()
+      new Notice(`Create failed: ${e instanceof Error ? e.message : String(e)}`);
       setSubmitting(false);
     }
   };
@@ -82,7 +85,8 @@ function NotebookFromFolderForm({ folderPath, defaultName, services, onDone }: F
   return (
     <div style={{ padding: '8px 0' }}>
       <div style={{ marginBottom: '12px' }}>
-        <label>名称</label>
+        {/* TODO(i18n): wire up t() */}
+        <label>Name</label>
         <input
           type="text"
           value={name}
@@ -91,13 +95,15 @@ function NotebookFromFolderForm({ folderPath, defaultName, services, onDone }: F
         />
       </div>
       <div style={{ marginBottom: '12px' }}>
+        {/* TODO(i18n): wire up t() */}
         <label>
           <input type="checkbox" checked={recursive} onChange={e => setRecursive(e.target.checked)} />
-          {' '}包含子文件夹
+          {' '}Include subfolders
         </label>
       </div>
       <div style={{ marginBottom: '12px' }}>
-        <label>索引格式</label>
+        {/* TODO(i18n): wire up t() */}
+        <label>Indexed formats</label>
         <div style={{ marginTop: '4px' }}>
           {ALL_FORMATS.map(ext => (
             <label key={ext} style={{ display: 'block' }}>
@@ -113,9 +119,11 @@ function NotebookFromFolderForm({ folderPath, defaultName, services, onDone }: F
         </div>
       </div>
       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-        <button onClick={onDone} disabled={submitting}>取消</button>
+        {/* TODO(i18n): wire up t() */}
+        <button onClick={onDone} disabled={submitting}>Cancel</button>
+        {/* TODO(i18n): wire up t() */}
         <button onClick={submit} disabled={!name.trim() || submitting}>
-          {submitting ? '创建中…' : '创建'}
+          {submitting ? 'Creating…' : 'Create'}
         </button>
       </div>
     </div>

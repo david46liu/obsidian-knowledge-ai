@@ -1,12 +1,13 @@
 // src/ui/components/OfficeFormatPicker.tsx
 import React from 'react';
 
+// TODO(i18n): wire up t()
 export const FORMAT_LABELS: Record<string, string> = {
   md:   'Markdown (.md, .txt)',
-  docx: 'Word 文档 (.docx)',
+  docx: 'Word (.docx)',
   pptx: 'PowerPoint (.pptx)',
   xlsx: 'Excel (.xlsx)',
-  pdf:  'PDF 文档 (.pdf)',
+  pdf:  'PDF (.pdf)',
 };
 
 /** 所有支持的索引格式(权威列表);新增格式只需在此处加一行。 */
@@ -54,7 +55,8 @@ export function OfficeFormatPicker({ value, onChange }: OfficeFormatPickerProps)
       padding: '12px',
       marginBottom: '8px',
     }}>
-      <legend style={{ padding: '0 6px', color: 'var(--text-muted)' }}>索引格式</legend>
+      {/* TODO(i18n): wire up t() */}
+      <legend style={{ padding: '0 6px', color: 'var(--text-muted)' }}>Indexed formats</legend>
       {ALL_FORMATS.map(ext => (
         <label key={ext} style={{ display: 'block', marginBottom: '4px' }}>
           <input
@@ -65,21 +67,24 @@ export function OfficeFormatPicker({ value, onChange }: OfficeFormatPickerProps)
           />
           {' '}{FORMAT_LABELS[ext]}
           {ext === 'md' && (
+            // TODO(i18n): wire up t()
             <span style={{ marginLeft: '6px', color: 'var(--text-muted)', fontSize: '0.85em' }}>
-              (必选)
+              (required)
             </span>
           )}
         </label>
       ))}
+      {/* TODO(i18n): wire up t() */}
       <label style={{ display: 'block', marginBottom: '4px' }}>
         <input type="checkbox" checked={imagesEnabled} onChange={toggleImages} />
-        {' '}图片 (.png, .jpg, .jpeg, .bmp, .gif)
+        {' '}Images (.png, .jpg, .jpeg, .bmp, .gif)
         <span style={{ marginLeft: '6px', color: 'var(--text-muted)', fontSize: '0.85em' }}>
-          需在设置 → 图片索引 中启用并分配 vision 任务
+          Requires enabling image indexing in Settings and assigning a Vision task
         </span>
       </label>
+      {/* TODO(i18n): wire up t() */}
       <div style={{ marginTop: '6px', color: 'var(--text-muted)', fontSize: '0.85em' }}>
-        修改后 notebook 标记为 dirty,请手动点 "重新索引"
+        Changes mark the notebook as dirty — click "Reindex" to apply.
       </div>
     </fieldset>
   );

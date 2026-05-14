@@ -23,7 +23,8 @@ export function ProviderCard({ provider, onEdit, onDelete, onTestConnection }: P
       setTestResult({ latencyMs: result.latencyMs });
     } else {
       setTestState('error');
-      setTestResult({ error: result.error ?? '未知错误' });
+      // TODO(i18n): wire up t()
+      setTestResult({ error: result.error ?? 'Unknown error' });
     }
   };
 
@@ -32,16 +33,20 @@ export function ProviderCard({ provider, onEdit, onDelete, onTestConnection }: P
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <strong>{provider.displayName}</strong>
-          {provider.disabled && <span style={{ color: 'var(--text-muted)', marginLeft: '8px' }}>[已禁用]</span>}
+          {/* TODO(i18n): wire up t() */}
+          {provider.disabled && <span style={{ color: 'var(--text-muted)', marginLeft: '8px' }}>[disabled]</span>}
           <div style={{ color: 'var(--text-muted)', fontSize: '0.85em' }}>{provider.baseUrl}</div>
         </div>
         <div style={{ display: 'flex', gap: '4px' }}>
+          {/* TODO(i18n): wire up t() */}
           <button onClick={handleTest} disabled={testState === 'loading'}>
-            {testState === 'loading' ? '测试中...' : '测试'}
+            {testState === 'loading' ? 'Testing…' : 'Test'}
           </button>
-          <button onClick={() => onEdit(provider)}>编辑</button>
-          <button onClick={() => { if (window.confirm(`删除 ${provider.displayName}？`)) onDelete(provider.id); }}>
-            删除
+          {/* TODO(i18n): wire up t() */}
+          <button onClick={() => onEdit(provider)}>Edit</button>
+          {/* TODO(i18n): wire up t() */}
+          <button onClick={() => { if (window.confirm(`Delete ${provider.displayName}?`)) onDelete(provider.id); }}>
+            Delete
           </button>
         </div>
       </div>

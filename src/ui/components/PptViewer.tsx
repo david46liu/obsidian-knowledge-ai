@@ -30,7 +30,8 @@ export function PptViewer({ markdown, citations }: Props) {
   if (slides.length === 0) {
     return (
       <div style={{ color: 'var(--text-muted)', padding: '12px' }}>
-        (无幻灯片内容)
+        {/* TODO(i18n): wire up t() */}
+        (No slide content)
       </div>
     );
   }
@@ -63,7 +64,8 @@ export function PptViewer({ markdown, citations }: Props) {
               display: 'flex',
               flexDirection: 'column',
             }}
-            title="点击放大"
+            // TODO(i18n): wire up t()
+            title="Click to expand"
           >
             {/* 16:9 区域:padding-top 56.25% 撑开 */}
             <div
@@ -102,9 +104,11 @@ export function PptViewer({ markdown, citations }: Props) {
                 justifyContent: 'space-between',
               }}
             >
-              <span>第 {i + 1} 页 / 共 {slides.length} 页</span>
+              {/* TODO(i18n): wire up t() */}
+              <span>Slide {i + 1} of {slides.length}</span>
               {detectMermaid(slide) && (
-                <span title="包含 mermaid 图表(导出 vault 后可看渲染)">📊 图表</span>
+                // TODO(i18n): wire up t()
+                <span title="Contains a mermaid diagram (renders after exporting to the vault)">📊 Diagram</span>
               )}
             </div>
           </div>
@@ -140,21 +144,24 @@ export function PptViewer({ markdown, citations }: Props) {
               disabled={zoomIndex === 0}
               style={{ padding: '4px 12px' }}
             >
-              上一页
+              {/* TODO(i18n): wire up t() */}
+              Previous
             </button>
             <button
               onClick={next}
               disabled={zoomIndex === slides.length - 1}
               style={{ padding: '4px 12px' }}
             >
-              下一页
+              {/* TODO(i18n): wire up t() */}
+              Next
             </button>
             <span style={{ marginLeft: '12px', fontSize: '0.9em' }}>
               {zoomIndex + 1} / {slides.length}
             </span>
             <div style={{ flex: 1 }} />
             <button onClick={closeZoom} style={{ padding: '4px 12px' }}>
-              关闭
+              {/* TODO(i18n): wire up t() */}
+              Close
             </button>
           </div>
 

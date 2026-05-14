@@ -47,6 +47,7 @@ import { LocalEmbeddingClient } from 'src/embedding/localEmbeddingClient';
 import { VectorStore } from 'src/embedding/vectorStore';
 import { invalidateAllEmbeddings } from 'src/services/IndexService';
 import { useNotebookAIStore, PluginServicesContext, type PluginServices } from 'src/ui/hooks/useStore';
+import { setLocale, resolveDefaultLocale, t } from 'src/i18n';
 
 import { App } from 'src/ui/App';
 import { ChatView } from 'src/ui/views/ChatView';
@@ -168,6 +169,10 @@ export default class NotebookAIPlugin extends Plugin {
     stage('4. notebookService.loadAll');
 
     const pluginData = this.notebookService.getPluginData();
+
+    // Initialize i18n as early as possible — every subsequent registration
+    // (commands, ribbon labels, settings) reads strings through t().
+    setLocale(resolveDefaultLocale(pluginData.ui?.locale));
 
     // ── 5. HashCache + PathMap 加载 ──────────────────────────
     // 这两个并行加载;hashCache 对大库可达 100+ MB,串行加载浪费 I/O。
@@ -562,9 +567,11 @@ export default class NotebookAIPlugin extends Plugin {
       },
 
       exportIndex: async (notebookId) => {
-        if (!notebookId) throw new Error('请先创建并选择 Notebook');
+        // TODO(i18n): wire up t()
+        if (!notebookId) throw new Error('Create and select a Notebook first.');
         const raw = await dataStore.read(paths.indexFile(notebookId));
-        if (!raw) throw new Error('索引文件不存在(未索引?)');
+        // TODO(i18n): wire up t()
+        if (!raw) throw new Error('Index file not found (not indexed yet?).');
         const ts = new Date().toISOString().replace(/[:.]/g, '-');
         const vaultPath = `notebook-ai-export-${notebookId.slice(0, 8)}-${ts}.json`;
         await this.app.vault.create(vaultPath, raw);
@@ -646,7 +653,8 @@ export default class NotebookAIPlugin extends Plugin {
           const slug = a.title.replace(/[\\/:*?"<>|]/g, '_').slice(0, 50);
           const ts = new Date(a.generatedAt).toISOString().replace(/[:.]/g, '-');
           const vaultPath = `notebook-ai-${a.kind}-${slug}-${ts}.md`;
-          const meta = `生成于 ${new Date(a.generatedAt).toLocaleString()},模型 ${a.modelUsed}${a.truncated ? ' (已截断)' : ''}`;
+          // TODO(i18n): wire up t()
+          const meta = `Generated ${new Date(a.generatedAt).toLocaleString()} · model ${a.modelUsed}${a.truncated ? ' (truncated)' : ''}`;
           const md = a.kind === 'ppt'
             ? buildMarpPptMarkdown(meta, a.content)
             : `# ${a.title}\n\n> ${meta}\n\n${a.content}\n`;
@@ -695,11 +703,13 @@ export default class NotebookAIPlugin extends Plugin {
           });
         }
         if (this.embeddingDownloadState === 'downloading') {
-          new Notice('模型正在下载中，请稍候');
+          // TODO(i18n): wire up t()
+          new Notice('Model is already downloading. Please wait.');
           return;
         }
         if (this.embeddingDownloadState === 'ready') {
-          new Notice('模型已就绪');
+          // TODO(i18n): wire up t()
+          new Notice('Model is ready.');
           return;
         }
         this.embeddingDownloadState = 'downloading';
@@ -711,13 +721,15 @@ export default class NotebookAIPlugin extends Plugin {
             await this.embeddingWorkerHost!.init(modelId, pluginDir, wasmBytes);
             this.embeddingDownloadState = 'ready';
             this.embeddingDownloadProgress = 100;
-            new Notice('模型下载完成');
+            // TODO(i18n): wire up t()
+            new Notice('Model download complete.');
           } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
             this.embeddingDownloadState = 'error';
             this.embeddingDownloadError = msg;
             logger.warn(`model download failed: ${msg}`);
-            new Notice(`模型下载失败: ${msg}`);
+            // TODO(i18n): wire up t()
+            new Notice(`Model download failed: ${msg}`);
           }
         })();
       },
@@ -737,6 +749,15 @@ export default class NotebookAIPlugin extends Plugin {
         return { cancel: () => ctrl.abort(), promise };
       },
       getSummaryCoverage: (notebookId) => this.summaryService.coverage(notebookId),
+      setLocale: async (locale) => {
+        const cur = this.notebookService.getPluginData();
+        await this.notebookService.savePluginData({
+          ...cur,
+          ui: { ...(cur.ui ?? {}), locale },
+        });
+        setLocale(locale);
+        new Notice(t('settings.languageChangedReloadRequired'));
+      },
       getEmbeddingCoverage: () => {
         const currentModelId = this.embeddingRegistry.get()?.modelId;
         let total = 0;
@@ -769,7 +790,8 @@ export default class NotebookAIPlugin extends Plugin {
         if (this.ocrStatus === 'initializing' || this.ocrStatus === 'ready') return;
         const cfg = this.notebookService.getPluginData().imageConfig;
         if (!cfg?.ocrEnabled || !this.ocrWorkerHost) {
-          this.ocrErrorMessage = 'OCR 未启用或 worker 未初始化';
+          // TODO(i18n): wire up t()
+          this.ocrErrorMessage = 'OCR is not enabled, or its worker is not initialized.';
           this.ocrStatus = 'error';
           return;
         }
@@ -831,7 +853,8 @@ export default class NotebookAIPlugin extends Plugin {
           }
         }
         await this.app.vault.create(candidate, content);
-        new Notice(`已保存到 ${candidate}`);
+        // TODO(i18n): wire up t()
+        new Notice(`Saved to ${candidate}`);
         return { vaultPath: candidate };
       },
     };
@@ -844,7 +867,8 @@ export default class NotebookAIPlugin extends Plugin {
       for (const id of ids) {
         this.indexService.reindex(id).catch(e => logger.warn(`reindex ${id} failed: ${e}`));
       }
-      new Notice(`已触发 ${ids.length} 个 Notebook 重索引(后台并发)`);
+      // TODO(i18n): wire up t()
+      new Notice(`Reindex triggered for ${ids.length} Notebook(s) (running in background)`);
     };
 
     // Helper:从 ribbon / command 触发"打开主视图"
@@ -853,14 +877,16 @@ export default class NotebookAIPlugin extends Plugin {
       const firstId = useNotebookAIStore.getState().notebooks[0]?.id;
       const targetId = activeId ?? firstId;
       if (!targetId) {
-        new Notice('请先创建 Notebook');
+        // TODO(i18n): wire up t()
+        new Notice('Create a Notebook first.');
         return;
       }
       services.openChatView(targetId).catch(e => logger.error(`openChatView: ${e}`));
     };
 
     // Ribbon icon
-    const ribbonEl = this.addRibbonIcon('book-marked', 'Notebook AI', () => openMainView());
+    // TODO(i18n): wire up t()
+    const ribbonEl = this.addRibbonIcon('book-marked', 'Knowledge AI', () => openMainView());
 
     // I6 修正:用 registerDomEvent 让 Obsidian 在 unload 时自动清理 listener
     this.registerDomEvent(ribbonEl, 'contextmenu', (evt) => {
@@ -1049,7 +1075,8 @@ class NotebookAIChatItemView extends ItemView {
   }
 
   getViewType(): string { return NotebookAIChatItemView.VIEW_TYPE; }
-  getDisplayText(): string { return 'Notebook AI Chat'; }
+  // TODO(i18n): wire up t()
+  getDisplayText(): string { return 'Knowledge AI Chat'; }
   getIcon(): string { return 'message-square'; }
 
   async onOpen(): Promise<void> {

@@ -1,12 +1,13 @@
 import React from 'react';
 import type { ImageConfig } from 'src/types/data';
 
+// TODO(i18n): wire up t()
 const COMMON_LANGS = [
-  { code: 'chi_sim', label: '中文简体' },
-  { code: 'chi_tra', label: '中文繁体' },
-  { code: 'eng', label: '英文' },
-  { code: 'jpn', label: '日文' },
-  { code: 'kor', label: '韩文' },
+  { code: 'chi_sim', label: 'Chinese (Simplified)' },
+  { code: 'chi_tra', label: 'Chinese (Traditional)' },
+  { code: 'eng', label: 'English' },
+  { code: 'jpn', label: 'Japanese' },
+  { code: 'kor', label: 'Korean' },
 ];
 
 export interface ImageSectionProps {
@@ -31,8 +32,9 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
     <div className="notebook-ai-image-section">
       <div className="setting-item">
         <div className="setting-item-info">
-          <div className="setting-item-name">启用 OCR (Tesseract.js)</div>
-          <div className="setting-item-description">从图片中抽取文字，本地运行，按需下载语言包</div>
+          {/* TODO(i18n): wire up t() */}
+          <div className="setting-item-name">Enable OCR (Tesseract.js)</div>
+          <div className="setting-item-description">Extract text from images locally. Language packs are downloaded on demand.</div>
         </div>
         <div className="setting-item-control">
           <div
@@ -48,8 +50,9 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
         <>
           <div className="setting-item">
             <div className="setting-item-info">
-              <div className="setting-item-name">OCR 语言</div>
-              <div className="setting-item-description">至少选一种；首次使用会从 tesseract.js CDN 下载</div>
+              {/* TODO(i18n): wire up t() */}
+              <div className="setting-item-name">OCR languages</div>
+              <div className="setting-item-description">Select at least one. Language packs are downloaded from the tesseract.js CDN on first use.</div>
             </div>
             <div className="setting-item-control" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {COMMON_LANGS.map(({ code, label }) => {
@@ -77,22 +80,27 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
 
           <div className="setting-item">
             <div className="setting-item-info">
-              <div className="setting-item-name">OCR 状态</div>
+              {/* TODO(i18n): wire up t() */}
+              <div className="setting-item-name">OCR status</div>
             </div>
             <div className="setting-item-control">
               {ocrStatus === 'not-ready' && (
-                <button onClick={onInitOcr}>初始化 / 下载语言包</button>
+                // TODO(i18n): wire up t()
+                <button onClick={onInitOcr}>Initialize / download language packs</button>
               )}
               {ocrStatus === 'initializing' && (
-                <span style={{ color: 'var(--text-muted)' }}>下载中…</span>
+                // TODO(i18n): wire up t()
+                <span style={{ color: 'var(--text-muted)' }}>Downloading…</span>
               )}
               {ocrStatus === 'ready' && (
-                <span style={{ color: 'var(--color-green)' }}>● 就绪</span>
+                // TODO(i18n): wire up t()
+                <span style={{ color: 'var(--color-green)' }}>● Ready</span>
               )}
               {ocrStatus === 'error' && (
                 <div>
-                  <button onClick={onInitOcr} style={{ marginRight: 8 }}>重试</button>
-                  <span style={{ color: 'var(--color-red)' }}>✗ 初始化失败</span>
+                  {/* TODO(i18n): wire up t() */}
+                  <button onClick={onInitOcr} style={{ marginRight: 8 }}>Retry</button>
+                  <span style={{ color: 'var(--color-red)' }}>✗ Initialization failed</span>
                   {ocrErrorMessage && (
                     <div style={{
                       marginTop: 6,
@@ -115,8 +123,9 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
 
       <div className="setting-item">
         <div className="setting-item-info">
-          <div className="setting-item-name">启用 Vision 描述</div>
-          <div className="setting-item-description">调用任务面板中分配给 "视觉理解" 的 LLM 描述图片内容</div>
+          {/* TODO(i18n): wire up t() */}
+          <div className="setting-item-name">Enable vision descriptions</div>
+          <div className="setting-item-description">Use the LLM assigned to the "Vision" task to describe image contents.</div>
         </div>
         <div className="setting-item-control">
           <div
@@ -130,8 +139,9 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
 
       <div className="setting-item">
         <div className="setting-item-info">
-          <div className="setting-item-name">最大图片大小 (MB)</div>
-          <div className="setting-item-description">超过该大小的图片会跳过索引（避免巨图阻塞）</div>
+          {/* TODO(i18n): wire up t() */}
+          <div className="setting-item-name">Max image size (MB)</div>
+          <div className="setting-item-description">Images larger than this are skipped to avoid blocking the indexer.</div>
         </div>
         <div className="setting-item-control">
           <input
@@ -147,8 +157,9 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
 
       <div className="setting-item">
         <div className="setting-item-info">
+          {/* TODO(i18n): wire up t() */}
           <div className="setting-item-description" style={{ color: 'var(--text-muted)', fontSize: '0.85em' }}>
-            提示：默认 notebook 不索引图片。在 notebook 编辑里勾选 png/jpg/jpeg/bmp/gif 扩展名后才会索引。
+            Tip: Notebooks do not index images by default. Enable the png/jpg/jpeg/bmp/gif extensions in the notebook editor first.
           </div>
         </div>
       </div>

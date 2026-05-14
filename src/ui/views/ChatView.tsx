@@ -3,12 +3,7 @@ import { useNotebookAIStore, usePluginServices } from 'src/ui/hooks/useStore';
 import { useChatSession } from 'src/ui/hooks/useChatSession';
 import { ChatMessage } from 'src/ui/components/ChatMessage';
 import { ArtifactsTab } from 'src/ui/views/ArtifactsTab';
-
-const PHASE_LABEL: Record<string, string> = {
-  retrieving: '检索中...',
-  reranking: '重排序中(可能需要数十秒)...',
-  generating: '生成回答中...',
-};
+import { t } from 'src/i18n';
 
 export function ChatView() {
   const tab = useNotebookAIStore(s => s.chatTab);
@@ -23,10 +18,11 @@ export function ChatView() {
           borderBottom: '1px solid var(--background-modifier-border)',
         }}
       >
-        <button onClick={() => setTab('chat')} disabled={tab === 'chat'}>对话</button>
-        <button onClick={() => setTab('artifacts')} disabled={tab === 'artifacts'}>产物</button>
+        <button onClick={() => setTab('chat')} disabled={tab === 'chat'}>{t('chat.tab.chat')}</button>
+        <button onClick={() => setTab('artifacts')} disabled={tab === 'artifacts'}>{t('chat.tab.artifacts')}</button>
       </div>
-      {/* 用 display 切换保持双 mount,避免 streaming 中切 tab 中断生成或丢失 state */}
+      {/* Keep both panels mounted via display toggle so streaming in one tab
+          doesn't get torn down when the user switches to the other. */}
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
         <div style={{ display: tab === 'chat' ? 'flex' : 'none', flexDirection: 'column', height: '100%' }}>
           <ChatPanel />
@@ -64,7 +60,7 @@ function ChatPanel() {
   }, [session?.turns.length, draftTurn?.content]);
 
   if (!notebook || !session) {
-    return <div style={{ padding: '16px' }}>请先在设置页选择 Notebook 并打开</div>;
+    return <div style={{ padding: '16px' }}>{t('chat.empty')}</div>;
   }
 
   const handleSubmit = () => {
@@ -74,13 +70,21 @@ function ChatPanel() {
     ask(text, { rerank, topK, expandQuery, expandNeighbors, summaryMode });
   };
 
+  const phaseLabel = (() => {
+    switch (phase.phase) {
+      case 'retrieving': return t('chat.phase.retrieving');
+      case 'reranking': return t('chat.phase.reranking');
+      case 'generating': return t('chat.phase.generating');
+      default: return phase.phase;
+    }
+  })();
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* 顶部 */}
       <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--background-modifier-border)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <strong>{notebook.name}</strong>
-          <small style={{ color: 'var(--text-muted)' }}>{session.turns.length} 轮</small>
+          <small style={{ color: 'var(--text-muted)' }}>{t('chat.turnCount', { count: session.turns.length })}</small>
         </div>
         <div style={{ display: 'flex', gap: '12px', marginTop: '4px', fontSize: '0.85em', flexWrap: 'wrap' }}>
           <label>
@@ -88,17 +92,17 @@ function ChatPanel() {
               type="checkbox"
               checked={rerank}
               onChange={e => setRerank(e.target.checked)}
-            /> 重排序
+            /> {t('chat.opt.rerank')}
           </label>
-          <label title="把问题用 LLM 改写成多个角度的查询,并行检索后合并。会增加 1 次 LLM 调用">
+          <label title={t('chat.opt.expandQueryTitle')}>
             <input
               type="checkbox"
               checked={expandQuery}
               onChange={e => setExpandQuery(e.target.checked)}
-            /> 查询扩展
+            /> {t('chat.opt.expandQuery')}
           </label>
           <label>
-            片段数 <input
+            {t('chat.opt.topK')} <input
               type="number"
               min={1}
               max={50}
@@ -107,8 +111,8 @@ function ChatPanel() {
               style={{ width: '50px' }}
             />
           </label>
-          <label title="每个命中片段自动带上同文档前后 N 个相邻片段,补全上下文">
-            相邻 <input
+          <label title={t('chat.opt.expandNeighborsTitle')}>
+            {t('chat.opt.expandNeighbors')} <input
               type="number"
               min={0}
               max={3}
@@ -117,37 +121,35 @@ function ChatPanel() {
               style={{ width: '40px' }}
             />
           </label>
-          <label title="对「总结/汇总/有哪些」类问题切换到按文档分组的广覆盖检索">
-            摘要 <select
+          <label title={t('chat.opt.summaryModeTitle')}>
+            {t('chat.opt.summaryMode')} <select
               value={summaryMode}
               onChange={e => setSummaryMode(e.target.value as 'auto' | 'on' | 'off')}
               style={{ fontSize: '0.95em' }}
             >
-              <option value="auto">自动</option>
-              <option value="on">强制开</option>
-              <option value="off">强制关</option>
+              <option value="auto">{t('chat.opt.summaryMode.auto')}</option>
+              <option value="on">{t('chat.opt.summaryMode.on')}</option>
+              <option value="off">{t('chat.opt.summaryMode.off')}</option>
             </select>
           </label>
         </div>
       </div>
 
-      {/* 消息区 */}
       <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
-        {session.turns.map(t => <ChatMessage key={t.id} turn={t} onSaveAsNote={handleSaveAsNote} />)}
+        {session.turns.map(turn => <ChatMessage key={turn.id} turn={turn} onSaveAsNote={handleSaveAsNote} />)}
         {draftTurn && <ChatMessage turn={draftTurn} isDraft />}
         {phase.phase !== 'idle' && phase.phase !== 'error' && (
           <div style={{ color: 'var(--text-muted)', fontSize: '0.85em' }}>
-            {PHASE_LABEL[phase.phase] ?? phase.phase}
+            {phaseLabel}
           </div>
         )}
         {phase.phase === 'error' && phase.error && (
           <div style={{ color: 'var(--color-red)', fontSize: '0.85em' }}>
-            错误: {phase.error}
+            {t('common.error')}: {phase.error}
           </div>
         )}
       </div>
 
-      {/* 输入区 */}
       <div style={{ padding: '8px 12px', borderTop: '1px solid var(--background-modifier-border)' }}>
         <textarea
           value={input}
@@ -158,15 +160,15 @@ function ChatPanel() {
               handleSubmit();
             }
           }}
-          placeholder="问点什么...(Shift+Enter 换行,Enter 发送)"
+          placeholder={t('chat.placeholderHelp')}
           rows={3}
           style={{ width: '100%', resize: 'vertical' }}
           disabled={streaming}
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
           {streaming
-            ? <button onClick={cancel}>取消</button>
-            : <button onClick={handleSubmit} disabled={!input.trim()}>发送</button>}
+            ? <button onClick={cancel}>{t('common.cancel')}</button>
+            : <button onClick={handleSubmit} disabled={!input.trim()}>{t('chat.send')}</button>}
         </div>
       </div>
     </div>

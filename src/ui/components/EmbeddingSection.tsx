@@ -1,5 +1,6 @@
 import React from 'react';
 import type { EmbeddingConfig, Provider } from 'src/types/data';
+import { t } from 'src/i18n';
 
 export interface VectorCoverage {
   total: number;
@@ -21,8 +22,8 @@ export interface EmbeddingSectionProps {
 }
 
 const PRESET_MODELS = [
-  { id: 'Xenova/multilingual-e5-small', label: 'multilingual-e5-small (默认, 多语言)' },
-  { id: 'Xenova/all-MiniLM-L6-v2', label: 'all-MiniLM-L6-v2 (英文)' },
+  { id: 'Xenova/multilingual-e5-small', label: 'multilingual-e5-small (default, multilingual)' },
+  { id: 'Xenova/all-MiniLM-L6-v2', label: 'all-MiniLM-L6-v2 (English)' },
 ];
 
 export function EmbeddingSection({
@@ -32,25 +33,25 @@ export function EmbeddingSection({
   const embeddingProviders = providers.filter(p => p.capabilities?.supportsEmbeddings);
 
   const coverageLabel = (() => {
-    if (!config.enabled) return '— 未启用';
-    if (!coverage) return '读取中...';
-    if (coverage.outdated) return '✗ 向量已过期，请重新索引';
-    if (coverage.total === 0) return '— 无文件';
+    if (!config.enabled) return t('settings.vector.coverageNotEnabled');
+    if (!coverage) return t('common.loading');
+    if (coverage.outdated) return `✗ ${t('settings.vector.coverageOutdated')}`;
+    if (coverage.total === 0) return t('settings.vector.coverageNoFiles');
     if (coverage.failed > 0) {
-      return `⚠ 部分覆盖 (${coverage.embedded} / ${coverage.total}，${coverage.failed} 个文件失败)`;
+      return `⚠ ${t('settings.vector.coveragePartialFailed', { embedded: coverage.embedded, total: coverage.total, failed: coverage.failed })}`;
     }
     if (coverage.embedded === coverage.total) {
-      return `✓ 全部已向量化 (${coverage.embedded} / ${coverage.total} chunks)`;
+      return `✓ ${t('settings.vector.coverageFull', { embedded: coverage.embedded, total: coverage.total })}`;
     }
-    return `⚠ 部分覆盖 (${coverage.embedded} / ${coverage.total})`;
+    return `⚠ ${t('settings.vector.coveragePartial', { embedded: coverage.embedded, total: coverage.total })}`;
   })();
 
   return (
     <div className="notebook-ai-embedding-section">
       <div className="setting-item">
         <div className="setting-item-info">
-          <div className="setting-item-name">启用向量检索</div>
-          <div className="setting-item-description">BM25 + 语义检索混合，提升召回质量</div>
+          <div className="setting-item-name">{t('settings.vector.enable')}</div>
+          <div className="setting-item-description">{t('settings.vector.enableDesc')}</div>
         </div>
         <div className="setting-item-control">
           <div
@@ -66,15 +67,15 @@ export function EmbeddingSection({
         <>
           <div className="setting-item">
             <div className="setting-item-info">
-              <div className="setting-item-name">Embedding 来源</div>
+              <div className="setting-item-name">{t('settings.vector.source')}</div>
             </div>
             <div className="setting-item-control">
               <select
                 value={config.source}
                 onChange={e => onConfigChange({ source: e.target.value as 'api' | 'local' })}
               >
-                <option value="local">本地模型</option>
-                <option value="api">外部 API</option>
+                <option value="local">{t('settings.vector.source.local')}</option>
+                <option value="api">{t('settings.vector.source.api')}</option>
               </select>
             </div>
           </div>
@@ -83,15 +84,15 @@ export function EmbeddingSection({
             <>
               <div className="setting-item">
                 <div className="setting-item-info">
-                  <div className="setting-item-name">Provider</div>
-                  <div className="setting-item-description">仅显示支持 embedding 能力的 provider</div>
+                  <div className="setting-item-name">{t('settings.vector.provider')}</div>
+                  <div className="setting-item-description">{t('settings.vector.providerDesc')}</div>
                 </div>
                 <div className="setting-item-control">
                   <select
                     value={config.apiProviderId ?? ''}
                     onChange={e => onConfigChange({ apiProviderId: e.target.value })}
                   >
-                    <option value="">-- 选择 Provider --</option>
+                    <option value="">{t('settings.vector.providerEmpty')}</option>
                     {embeddingProviders.map(p => (
                       <option key={p.id} value={p.id}>{p.displayName}</option>
                     ))}
@@ -100,7 +101,7 @@ export function EmbeddingSection({
               </div>
               <div className="setting-item">
                 <div className="setting-item-info">
-                  <div className="setting-item-name">模型名称</div>
+                  <div className="setting-item-name">{t('settings.vector.apiModel')}</div>
                 </div>
                 <div className="setting-item-control">
                   <input
@@ -118,7 +119,7 @@ export function EmbeddingSection({
             <>
               <div className="setting-item">
                 <div className="setting-item-info">
-                  <div className="setting-item-name">预设模型</div>
+                  <div className="setting-item-name">{t('settings.vector.preset')}</div>
                 </div>
                 <div className="setting-item-control">
                   <select
@@ -133,11 +134,11 @@ export function EmbeddingSection({
               </div>
               <div className="setting-item">
                 <div className="setting-item-info">
-                  <div className="setting-item-name">模型状态</div>
+                  <div className="setting-item-name">{t('settings.vector.modelStatus')}</div>
                 </div>
                 <div className="setting-item-control">
                   {modelDownloadState === 'not-downloaded' && (
-                    <button onClick={onDownloadModel}>下载模型</button>
+                    <button onClick={onDownloadModel}>{t('settings.vector.modelDownload')}</button>
                   )}
                   {modelDownloadState === 'downloading' && (
                     <div>
@@ -146,12 +147,12 @@ export function EmbeddingSection({
                     </div>
                   )}
                   {modelDownloadState === 'ready' && (
-                    <span style={{ color: 'var(--color-green)' }}>● 就绪</span>
+                    <span style={{ color: 'var(--color-green)' }}>● {t('settings.vector.modelReady')}</span>
                   )}
                   {modelDownloadState === 'error' && (
                     <div>
-                      <button onClick={onDownloadModel} style={{ marginRight: 8 }}>重试</button>
-                      <span style={{ color: 'var(--color-red)' }}>✗ 下载失败</span>
+                      <button onClick={onDownloadModel} style={{ marginRight: 8 }}>{t('common.retry')}</button>
+                      <span style={{ color: 'var(--color-red)' }}>✗ {t('settings.vector.modelDownloadFailed')}</span>
                       {downloadError && (
                         <div style={{
                           marginTop: 6,
@@ -174,17 +175,17 @@ export function EmbeddingSection({
 
           <div className="setting-item">
             <div className="setting-item-info">
-              <div className="setting-item-name">向量覆盖</div>
+              <div className="setting-item-name">{t('settings.vector.coverage')}</div>
               <div className="setting-item-description">{coverageLabel}</div>
             </div>
           </div>
 
           <div className="setting-item">
             <div className="setting-item-info">
-              <div className="setting-item-description">切换模型后需重新索引所有 Notebook 才能生效</div>
+              <div className="setting-item-description">{t('settings.vector.reindexHint')}</div>
             </div>
             <div className="setting-item-control">
-              <button onClick={onTriggerReindex}>触发全量重新索引</button>
+              <button onClick={onTriggerReindex}>{t('settings.vector.reindexAll')}</button>
             </div>
           </div>
         </>

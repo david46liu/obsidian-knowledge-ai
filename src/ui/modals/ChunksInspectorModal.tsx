@@ -68,14 +68,18 @@ function ChunksInspectorContent({ filePath, notebookId, services }: ContentProps
     return () => { cancelled = true; };
   }, [filePath, notebookId, services]);
 
-  if (state.kind === 'loading') return <div>加载中…</div>;
-  if (state.kind === 'no-index') return <div>此文件尚未索引(或属于其他 notebook)。</div>;
-  if (state.kind === 'error') return <div style={{ color: 'var(--text-error)' }}>错误:{state.message}</div>;
+  // TODO(i18n): wire up t()
+  if (state.kind === 'loading') return <div>Loading…</div>;
+  // TODO(i18n): wire up t()
+  if (state.kind === 'no-index') return <div>This file isn't indexed yet (or belongs to a different notebook).</div>;
+  // TODO(i18n): wire up t()
+  if (state.kind === 'error') return <div style={{ color: 'var(--text-error)' }}>Error: {state.message}</div>;
 
   return (
     <div style={{ maxHeight: '60vh', overflow: 'auto' }}>
+      {/* TODO(i18n): wire up t() */}
       <div style={{ marginBottom: '8px', color: 'var(--text-muted)', fontSize: '0.85em' }}>
-        共 {state.chunks.length} 个 chunk · file hash: {state.fileHash.slice(0, 12)}…
+        {state.chunks.length} chunk(s) · file hash: {state.fileHash.slice(0, 12)}…
       </div>
       {state.chunks.map((c, i) => (
         <ChunkCard key={i} chunk={c} index={i} />
@@ -107,7 +111,8 @@ function ChunkCard({ chunk, index }: { chunk: Chunk; index: number }) {
 function describeLocator(loc: Chunk['locator']): string {
   if (!loc) return '—';
   if (loc.kind === 'slide') {
-    const note = loc.isNote ? ' · 备注' : '';
+    // TODO(i18n): wire up t()
+    const note = loc.isNote ? ' · notes' : '';
     return `Slide ${loc.index}${loc.title ? `: ${loc.title}` : ''}${note}`;
   }
   if (loc.kind === 'sheet') {

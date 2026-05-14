@@ -15,7 +15,8 @@ export function FolderPicker({ value, folders, onChange, disabled }: FolderPicke
       onChange={e => onChange(e.target.value)}
       style={{ width: '100%' }}
     >
-      <option value="">— 选择文件夹 —</option>
+      {/* TODO(i18n): wire up t() */}
+      <option value="">— Select a folder —</option>
       {folders.map(f => <option key={f} value={f}>{f}</option>)}
     </select>
   );

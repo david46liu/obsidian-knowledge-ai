@@ -25,7 +25,8 @@ export function attachFolderContextMenu(
 
   // 1. 添加为 Notebook 源
   menu.addItem(item => {
-    item.setTitle('添加为 Notebook 源').setIcon('folder-plus');
+    // TODO(i18n): wire up t()
+    item.setTitle('Add as Notebook source').setIcon('folder-plus');
     if (allNotebooks.length === 0) {
       item.setDisabled(true);
       return;
@@ -45,14 +46,16 @@ export function attachFolderContextMenu(
     } else {
       // Fallback: flat 列出每个 notebook 一项(老 Obsidian)
       item.onClick(() => {
-        new Notice('该 Obsidian 版本不支持子菜单,请在 Settings 手动添加 source');
+        // TODO(i18n): wire up t()
+        new Notice('This Obsidian version does not support submenus — add the source from Settings.');
       });
     }
   });
 
   // 2. 新建 Notebook 用此文件夹
   menu.addItem(item => {
-    item.setTitle('新建 Notebook 用此文件夹').setIcon('folder-symlink')
+    // TODO(i18n): wire up t()
+    item.setTitle('New Notebook from this folder').setIcon('folder-symlink')
       .onClick(() => {
         new NotebookFromFolderModal(deps.app, folderPath, deps.services).open();
       });
@@ -61,16 +64,19 @@ export function attachFolderContextMenu(
   // 3. 打开 Notebook(仅当被引用时显示)
   if (referencingNotebooks.length === 1) {
     menu.addItem(item => {
-      item.setTitle(`打开 "${referencingNotebooks[0].name}"`).setIcon('book-open')
+      // TODO(i18n): wire up t()
+      item.setTitle(`Open "${referencingNotebooks[0].name}"`).setIcon('book-open')
         .onClick(() => {
           deps.services.openChatView(referencingNotebooks[0].id).catch(e =>
-            new Notice(`打开失败: ${e instanceof Error ? e.message : String(e)}`)
+            // TODO(i18n): wire up t()
+            new Notice(`Open failed: ${e instanceof Error ? e.message : String(e)}`)
           );
         });
     });
   } else if (referencingNotebooks.length > 1) {
     menu.addItem(item => {
-      item.setTitle('打开 Notebook').setIcon('book-open');
+      // TODO(i18n): wire up t()
+      item.setTitle('Open Notebook').setIcon('book-open');
       const maybe = item as unknown as { setSubmenu?: () => Menu };
       if (typeof maybe.setSubmenu === 'function') {
         const sub = maybe.setSubmenu();
@@ -78,7 +84,8 @@ export function attachFolderContextMenu(
           sub.addItem(it => {
             it.setTitle(nb.name).onClick(() => {
               deps.services.openChatView(nb.id).catch(e =>
-                new Notice(`打开失败: ${e instanceof Error ? e.message : String(e)}`)
+                // TODO(i18n): wire up t()
+                new Notice(`Open failed: ${e instanceof Error ? e.message : String(e)}`)
               );
             });
           });
@@ -86,7 +93,8 @@ export function attachFolderContextMenu(
       } else {
         item.onClick(() => {
           deps.services.openChatView(referencingNotebooks[0].id).catch(e =>
-            new Notice(`打开失败: ${e instanceof Error ? e.message : String(e)}`)
+            // TODO(i18n): wire up t()
+            new Notice(`Open failed: ${e instanceof Error ? e.message : String(e)}`)
           );
         });
       }
@@ -96,18 +104,21 @@ export function attachFolderContextMenu(
   // 4. 重新索引相关 Notebook(仅当被引用时显示)
   if (referencingNotebooks.length > 0) {
     menu.addItem(item => {
+      // TODO(i18n): wire up t()
       const label = referencingNotebooks.length === 1
-        ? `重新索引 "${referencingNotebooks[0].name}"`
-        : `重新索引 ${referencingNotebooks.length} 个相关 Notebook`;
+        ? `Reindex "${referencingNotebooks[0].name}"`
+        : `Reindex ${referencingNotebooks.length} related Notebooks`;
       item.setTitle(label).setIcon('refresh-cw')
         .onClick(() => {
           // fire-and-forget,与 main.ts triggerReindexAll 风格一致;失败时每个 notebook 各自报错
           for (const nb of referencingNotebooks) {
             deps.services.reindex(nb.id).catch(e =>
-              new Notice(`重索引 ${nb.name} 失败: ${e instanceof Error ? e.message : String(e)}`)
+              // TODO(i18n): wire up t()
+              new Notice(`Reindex of ${nb.name} failed: ${e instanceof Error ? e.message : String(e)}`)
             );
           }
-          new Notice(`已触发 ${referencingNotebooks.length} 个 Notebook 重索引(后台并发)`);
+          // TODO(i18n): wire up t()
+          new Notice(`Reindex triggered for ${referencingNotebooks.length} Notebook(s) (running in background)`);
         });
     });
   }
@@ -126,8 +137,10 @@ async function addFolderAsSource(
   ];
   try {
     await deps.services.updateNotebook(notebook.id, { sources: newSources });
-    new Notice(`已将 ${folderPath} 添加为 ${notebook.name} 的源`);
+    // TODO(i18n): wire up t()
+    new Notice(`Added ${folderPath} as a source of ${notebook.name}`);
   } catch (e) {
-    new Notice(`添加失败: ${e instanceof Error ? e.message : String(e)}`);
+    // TODO(i18n): wire up t()
+    new Notice(`Add failed: ${e instanceof Error ? e.message : String(e)}`);
   }
 }

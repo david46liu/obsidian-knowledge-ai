@@ -23,14 +23,16 @@ export function PersistentErrorBar({ errors }: PersistentErrorBarProps) {
         alignItems: 'center',
         gap: '8px',
       }}>
+        {/* TODO(i18n): wire up t() */}
         <span>
-          ⛔ {errors.length} 个文件解析失败(重试无效,需修复源文件)
+          ⛔ {errors.length} file(s) failed to parse (retrying won't help — fix the source files)
         </span>
         <button
           onClick={() => setExpanded(e => !e)}
           style={{ padding: '2px 10px', fontSize: '0.9em' }}
         >
-          {expanded ? '收起' : '查看'}
+          {/* TODO(i18n): wire up t() */}
+          {expanded ? 'Hide' : 'View'}
         </button>
       </div>
       {expanded && (

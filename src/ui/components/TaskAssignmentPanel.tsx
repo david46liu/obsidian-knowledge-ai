@@ -11,13 +11,14 @@ interface TaskAssignmentPanelProps {
 
 const ACTIVE_TASKS: TaskName[] = ['chat', 'rerank', 'summary', 'vision'];
 const INACTIVE_TASKS: TaskName[] = ['embedding', 'tts'];
+// TODO(i18n): wire up t()
 const TASK_LABELS: Record<TaskName, string> = {
-  chat: '对话',
-  rerank: '重排序',
-  summary: '摘要',
-  embedding: '向量化',
-  tts: '语音合成',
-  vision: '视觉理解',
+  chat: 'Chat',
+  rerank: 'Rerank',
+  summary: 'Summary',
+  embedding: 'Embedding',
+  tts: 'TTS',
+  vision: 'Vision',
 };
 
 function TaskRow({
@@ -39,9 +40,10 @@ function TaskRow({
   useEffect(() => { setDraftModel(persistedModel); }, [persistedModel]);
 
   const selectedProvider = providers.find(p => p.id === providerId);
+  // TODO(i18n): wire up t()
   const placeholder = selectedProvider
-    ? `默认: ${selectedProvider.defaultModel}`
-    : '模型名';
+    ? `Default: ${selectedProvider.defaultModel}`
+    : 'Model name';
 
   const handleProviderChange = (pid: string) => {
     if (!pid) { onChange(task, null); return; }
@@ -58,7 +60,8 @@ function TaskRow({
     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px', opacity: disabled ? 0.5 : 1 }}>
       <span style={{ minWidth: '80px' }}>{TASK_LABELS[task]}</span>
       <select value={providerId} disabled={disabled} onChange={e => handleProviderChange(e.target.value)} style={{ flex: 1 }}>
-        <option value="">— 选择 Provider —</option>
+        {/* TODO(i18n): wire up t() */}
+        <option value="">— Select provider —</option>
         {providers.map(p => <option key={p.id} value={p.id}>{p.displayName}</option>)}
       </select>
       <input
@@ -87,8 +90,9 @@ export function TaskAssignmentPanel({
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          <span>主模型</span>
-          <button onClick={onToggleAdvanced}>高级设置</button>
+          {/* TODO(i18n): wire up t() */}
+          <span>Main model</span>
+          <button onClick={onToggleAdvanced}>Advanced</button>
         </div>
         <TaskRow
           task="chat"
@@ -103,8 +107,9 @@ export function TaskAssignmentPanel({
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <span>任务模型分配</span>
-        <button onClick={onToggleAdvanced}>简单模式</button>
+        {/* TODO(i18n): wire up t() */}
+        <span>Task model assignments</span>
+        <button onClick={onToggleAdvanced}>Simple mode</button>
       </div>
       {ACTIVE_TASKS.map(task => (
         <TaskRow
