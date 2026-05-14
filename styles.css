@@ -1,0 +1,87 @@
+/* Notebook AI styles — populated in Plan C */
+
+.notebook-ai-indexed-folder > .nav-folder-title-content::before {
+  content: "📚 ";
+  margin-right: 2px;
+}
+
+/* Allow text selection inside chat bubbles. Obsidian's view-content parent
+   defaults to -webkit-user-select: none, so we explicitly opt in on our own
+   chat contents — otherwise users can't drag-select to copy assistant replies. */
+.nai-chat-bubble,
+.nai-chat-bubble * {
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+/* Keep interactive children (links, buttons) clickable, not text-cursored. */
+.nai-chat-bubble a,
+.nai-chat-bubble button {
+  cursor: pointer;
+}
+
+/* Artifact viewer: enable text selection (same reason as chat bubbles) and
+   apply some breathing room so MarkdownRenderer-rendered content looks like
+   a document instead of crammed prose. */
+.nai-artifact-md,
+.nai-artifact-md * {
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+.nai-artifact-md a,
+.nai-artifact-md button {
+  cursor: pointer;
+}
+.nai-artifact-md h1,
+.nai-artifact-md h2,
+.nai-artifact-md h3,
+.nai-artifact-md h4 {
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+.nai-artifact-md h1 { font-size: 1.5em; }
+.nai-artifact-md h2 { font-size: 1.3em; }
+.nai-artifact-md h3 { font-size: 1.15em; }
+.nai-artifact-md p {
+  margin: 0.6em 0;
+  line-height: 1.65;
+}
+.nai-artifact-md ul,
+.nai-artifact-md ol {
+  margin: 0.4em 0;
+  padding-left: 1.6em;
+}
+.nai-artifact-md li {
+  margin: 0.2em 0;
+  line-height: 1.6;
+}
+.nai-artifact-md table {
+  border-collapse: collapse;
+  margin: 0.8em 0;
+}
+.nai-artifact-md th,
+.nai-artifact-md td {
+  border: 1px solid var(--background-modifier-border);
+  padding: 4px 8px;
+}
+.nai-artifact-md code {
+  background: var(--background-modifier-border);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+.nai-artifact-md pre {
+  background: var(--background-secondary);
+  padding: 8px 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+.nai-artifact-md blockquote {
+  border-left: 3px solid var(--background-modifier-border);
+  padding-left: 12px;
+  margin: 0.6em 0;
+  color: var(--text-muted);
+}

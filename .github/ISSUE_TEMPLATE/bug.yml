@@ -1,0 +1,61 @@
+name: Bug report
+description: Something is broken or behaves unexpectedly.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. The more concrete detail, the faster a fix.
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: From Settings → Community plugins → Knowledge AI, or `manifest.json`.
+      placeholder: "0.3.0"
+    validations:
+      required: true
+  - type: input
+    id: obsidian-version
+    attributes:
+      label: Obsidian version
+      description: From Settings → About.
+      placeholder: "1.7.7"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Windows 11 / macOS 14.5 / Ubuntu 22.04"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you do, what did you expect, what did you actually see?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Steps to reproduce on a fresh vault. If it depends on a specific file type, mention it (and attach a sanitized sample if you can).
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console logs
+      description: |
+        Open Obsidian's DevTools (Ctrl/Cmd+Shift+I) → Console tab.
+        Filter on `[NotebookAI]` and paste any relevant lines (especially around the time of the bug).
+      render: shell
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant configuration
+      description: |
+        - Vector retrieval on/off, model.
+        - Provider(s) configured (just the kind, not the API key).
+        - Approximate notebook size (file count / chunk count from the notebook card).

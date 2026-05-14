@@ -1,0 +1,48 @@
+{
+  "name": "notebook-ai",
+  "version": "0.3.0",
+  "private": true,
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "gen-fixtures": "tsx scripts/generate-fixtures.ts",
+    "deploy": "node scripts/deploy.mjs",
+    "release": "npm run build && node scripts/release.mjs"
+  },
+  "dependencies": {
+    "@xenova/transformers": "^2.17.2",
+    "@xmldom/xmldom": "^0.9.10",
+    "fflate": "^0.8.2",
+    "mammoth": "^1.12.0",
+    "minisearch": "^7.1.0",
+    "pdfjs-dist": "^5.7.284",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tesseract.js": "^7.0.0",
+    "xlsx": "^0.18.5",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.6",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "builtin-modules": "^4.0.0",
+    "docx": "^9.6.1",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.14.0",
+    "msw": "^2.6.5",
+    "obsidian": "^1.12.3",
+    "pdf-lib": "^1.17.1",
+    "pptxgenjs": "^4.0.1",
+    "prettier": "^3.3.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  }
+}
