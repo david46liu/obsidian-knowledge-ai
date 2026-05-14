@@ -1,6 +1,7 @@
 import { App, Modal } from 'obsidian';
 import React from 'react';
 import { createRoot, type Root } from 'react-dom/client';
+import { t } from 'src/i18n';
 import type { Chunk, NotebookId } from 'src/types/data';
 import type { PluginServices } from 'src/ui/hooks/useStore';
 
@@ -17,7 +18,7 @@ export class ChunksInspectorModal extends Modal {
   }
 
   onOpen(): void {
-    this.titleEl.setText(`Chunks · ${this.filePath}`);
+    this.titleEl.setText(t('chunksInspector.title', { path: this.filePath }));
     this.root = createRoot(this.contentEl);
     this.root.render(
       <ChunksInspectorContent
@@ -68,18 +69,14 @@ function ChunksInspectorContent({ filePath, notebookId, services }: ContentProps
     return () => { cancelled = true; };
   }, [filePath, notebookId, services]);
 
-  // TODO(i18n): wire up t()
-  if (state.kind === 'loading') return <div>Loading…</div>;
-  // TODO(i18n): wire up t()
-  if (state.kind === 'no-index') return <div>This file isn't indexed yet (or belongs to a different notebook).</div>;
-  // TODO(i18n): wire up t()
-  if (state.kind === 'error') return <div style={{ color: 'var(--text-error)' }}>Error: {state.message}</div>;
+  if (state.kind === 'loading') return <div>{t('common.loading')}</div>;
+  if (state.kind === 'no-index') return <div>{t('chunksInspector.notIndexed')}</div>;
+  if (state.kind === 'error') return <div style={{ color: 'var(--text-error)' }}>{t('chunksInspector.errorPrefix', { error: state.message })}</div>;
 
   return (
     <div style={{ maxHeight: '60vh', overflow: 'auto' }}>
-      {/* TODO(i18n): wire up t() */}
       <div style={{ marginBottom: '8px', color: 'var(--text-muted)', fontSize: '0.85em' }}>
-        {state.chunks.length} chunk(s) · file hash: {state.fileHash.slice(0, 12)}…
+        {t('chunksInspector.summary', { count: state.chunks.length, hash: state.fileHash.slice(0, 12) })}
       </div>
       {state.chunks.map((c, i) => (
         <ChunkCard key={i} chunk={c} index={i} />
@@ -111,14 +108,13 @@ function ChunkCard({ chunk, index }: { chunk: Chunk; index: number }) {
 function describeLocator(loc: Chunk['locator']): string {
   if (!loc) return '—';
   if (loc.kind === 'slide') {
-    // TODO(i18n): wire up t()
-    const note = loc.isNote ? ' · notes' : '';
-    return `Slide ${loc.index}${loc.title ? `: ${loc.title}` : ''}${note}`;
+    const note = loc.isNote ? ' · ' + t('chunksInspector.notes') : '';
+    return t('chunksInspector.slide', { index: loc.index }) + (loc.title ? `: ${loc.title}` : '') + note;
   }
   if (loc.kind === 'sheet') {
-    const range = loc.rowRange ? ` · row ${loc.rowRange[0]}-${loc.rowRange[1]}` : '';
-    return `Sheet ${loc.name}${range}`;
+    const range = loc.rowRange ? ` · ${t('chunksInspector.row', { from: loc.rowRange[0], to: loc.rowRange[1] })}` : '';
+    return t('chunksInspector.sheet', { name: loc.name }) + range;
   }
-  if (loc.kind === 'page') return `Page ${loc.pageRange[0]}-${loc.pageRange[1]}`;
+  if (loc.kind === 'page') return t('chunksInspector.page', { from: loc.pageRange[0], to: loc.pageRange[1] });
   return JSON.stringify(loc);
 }

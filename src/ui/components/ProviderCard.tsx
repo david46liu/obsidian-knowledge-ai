@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { t } from 'src/i18n';
 import type { Provider, ProviderId } from 'src/types/data';
 
 interface ProviderCardProps {
@@ -23,8 +24,7 @@ export function ProviderCard({ provider, onEdit, onDelete, onTestConnection }: P
       setTestResult({ latencyMs: result.latencyMs });
     } else {
       setTestState('error');
-      // TODO(i18n): wire up t()
-      setTestResult({ error: result.error ?? 'Unknown error' });
+      setTestResult({ error: result.error ?? t('common.unknown') });
     }
   };
 
@@ -33,20 +33,16 @@ export function ProviderCard({ provider, onEdit, onDelete, onTestConnection }: P
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <strong>{provider.displayName}</strong>
-          {/* TODO(i18n): wire up t() */}
-          {provider.disabled && <span style={{ color: 'var(--text-muted)', marginLeft: '8px' }}>[disabled]</span>}
+          {provider.disabled && <span style={{ color: 'var(--text-muted)', marginLeft: '8px' }}>{t('providerCard.disabledTag')}</span>}
           <div style={{ color: 'var(--text-muted)', fontSize: '0.85em' }}>{provider.baseUrl}</div>
         </div>
         <div style={{ display: 'flex', gap: '4px' }}>
-          {/* TODO(i18n): wire up t() */}
           <button onClick={handleTest} disabled={testState === 'loading'}>
-            {testState === 'loading' ? 'Testing…' : 'Test'}
+            {testState === 'loading' ? t('providerCard.testing') : t('providerCard.test')}
           </button>
-          {/* TODO(i18n): wire up t() */}
-          <button onClick={() => onEdit(provider)}>Edit</button>
-          {/* TODO(i18n): wire up t() */}
-          <button onClick={() => { if (window.confirm(`Delete ${provider.displayName}?`)) onDelete(provider.id); }}>
-            Delete
+          <button onClick={() => onEdit(provider)}>{t('common.edit')}</button>
+          <button onClick={() => { if (window.confirm(t('providerCard.deleteConfirm', { name: provider.displayName }))) onDelete(provider.id); }}>
+            {t('common.delete')}
           </button>
         </div>
       </div>

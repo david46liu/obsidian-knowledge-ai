@@ -1,13 +1,13 @@
 import React from 'react';
+import { t } from 'src/i18n';
 import type { ImageConfig } from 'src/types/data';
 
-// TODO(i18n): wire up t()
-const COMMON_LANGS = [
-  { code: 'chi_sim', label: 'Chinese (Simplified)' },
-  { code: 'chi_tra', label: 'Chinese (Traditional)' },
-  { code: 'eng', label: 'English' },
-  { code: 'jpn', label: 'Japanese' },
-  { code: 'kor', label: 'Korean' },
+const COMMON_LANGS: Array<{ code: string; labelKey: string }> = [
+  { code: 'chi_sim', labelKey: 'image.lang.chiSim' },
+  { code: 'chi_tra', labelKey: 'image.lang.chiTra' },
+  { code: 'eng', labelKey: 'image.lang.eng' },
+  { code: 'jpn', labelKey: 'image.lang.jpn' },
+  { code: 'kor', labelKey: 'image.lang.kor' },
 ];
 
 export interface ImageSectionProps {
@@ -32,9 +32,8 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
     <div className="notebook-ai-image-section">
       <div className="setting-item">
         <div className="setting-item-info">
-          {/* TODO(i18n): wire up t() */}
-          <div className="setting-item-name">Enable OCR (Tesseract.js)</div>
-          <div className="setting-item-description">Extract text from images locally. Language packs are downloaded on demand.</div>
+          <div className="setting-item-name">{t('image.ocr.enableName')}</div>
+          <div className="setting-item-description">{t('image.ocr.enableDesc')}</div>
         </div>
         <div className="setting-item-control">
           <div
@@ -50,12 +49,11 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
         <>
           <div className="setting-item">
             <div className="setting-item-info">
-              {/* TODO(i18n): wire up t() */}
-              <div className="setting-item-name">OCR languages</div>
-              <div className="setting-item-description">Select at least one. Language packs are downloaded from the tesseract.js CDN on first use.</div>
+              <div className="setting-item-name">{t('image.ocr.langsName')}</div>
+              <div className="setting-item-description">{t('image.ocr.langsDesc')}</div>
             </div>
             <div className="setting-item-control" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              {COMMON_LANGS.map(({ code, label }) => {
+              {COMMON_LANGS.map(({ code, labelKey }) => {
                 const active = config.ocrLangs.includes(code);
                 return (
                   <button
@@ -71,7 +69,7 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
                       cursor: 'pointer',
                     }}
                   >
-                    {label}
+                    {t(labelKey)}
                   </button>
                 );
               })}
@@ -80,27 +78,22 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
 
           <div className="setting-item">
             <div className="setting-item-info">
-              {/* TODO(i18n): wire up t() */}
-              <div className="setting-item-name">OCR status</div>
+              <div className="setting-item-name">{t('image.ocr.statusName')}</div>
             </div>
             <div className="setting-item-control">
               {ocrStatus === 'not-ready' && (
-                // TODO(i18n): wire up t()
-                <button onClick={onInitOcr}>Initialize / download language packs</button>
+                <button onClick={onInitOcr}>{t('image.ocr.initButton')}</button>
               )}
               {ocrStatus === 'initializing' && (
-                // TODO(i18n): wire up t()
-                <span style={{ color: 'var(--text-muted)' }}>Downloading…</span>
+                <span style={{ color: 'var(--text-muted)' }}>{t('image.ocr.downloading')}</span>
               )}
               {ocrStatus === 'ready' && (
-                // TODO(i18n): wire up t()
-                <span style={{ color: 'var(--color-green)' }}>● Ready</span>
+                <span style={{ color: 'var(--color-green)' }}>{t('image.ocr.statusReady')}</span>
               )}
               {ocrStatus === 'error' && (
                 <div>
-                  {/* TODO(i18n): wire up t() */}
-                  <button onClick={onInitOcr} style={{ marginRight: 8 }}>Retry</button>
-                  <span style={{ color: 'var(--color-red)' }}>✗ Initialization failed</span>
+                  <button onClick={onInitOcr} style={{ marginRight: 8 }}>{t('common.retry')}</button>
+                  <span style={{ color: 'var(--color-red)' }}>{t('image.ocr.statusFailed')}</span>
                   {ocrErrorMessage && (
                     <div style={{
                       marginTop: 6,
@@ -123,9 +116,8 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
 
       <div className="setting-item">
         <div className="setting-item-info">
-          {/* TODO(i18n): wire up t() */}
-          <div className="setting-item-name">Enable vision descriptions</div>
-          <div className="setting-item-description">Use the LLM assigned to the "Vision" task to describe image contents.</div>
+          <div className="setting-item-name">{t('image.vision.enableName')}</div>
+          <div className="setting-item-description">{t('image.vision.enableDesc')}</div>
         </div>
         <div className="setting-item-control">
           <div
@@ -139,9 +131,8 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
 
       <div className="setting-item">
         <div className="setting-item-info">
-          {/* TODO(i18n): wire up t() */}
-          <div className="setting-item-name">Max image size (MB)</div>
-          <div className="setting-item-description">Images larger than this are skipped to avoid blocking the indexer.</div>
+          <div className="setting-item-name">{t('image.maxSize.name')}</div>
+          <div className="setting-item-description">{t('image.maxSize.desc')}</div>
         </div>
         <div className="setting-item-control">
           <input
@@ -157,9 +148,8 @@ export function ImageSection({ config, ocrStatus, ocrErrorMessage, onConfigChang
 
       <div className="setting-item">
         <div className="setting-item-info">
-          {/* TODO(i18n): wire up t() */}
           <div className="setting-item-description" style={{ color: 'var(--text-muted)', fontSize: '0.85em' }}>
-            Tip: Notebooks do not index images by default. Enable the png/jpg/jpeg/bmp/gif extensions in the notebook editor first.
+            {t('image.tip.enableExtensions')}
           </div>
         </div>
       </div>

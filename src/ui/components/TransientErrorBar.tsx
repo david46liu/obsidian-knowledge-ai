@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from 'src/i18n';
 import type { NotebookTransientFileError } from 'src/types/data';
 
 export interface TransientErrorBarProps {
@@ -22,17 +23,15 @@ export function TransientErrorBar({ errors, onRetry }: TransientErrorBarProps) {
       gap: '8px',
       fontSize: '0.9em',
     }}>
-      {/* TODO(i18n): wire up t() */}
       <span>
-        ⚠ {errors.length} file(s) were not indexed this run (retry available)
+        {t('errorBar.transientSummary', { count: errors.length })}
       </span>
       <button
         onClick={onRetry}
         style={{ padding: '2px 10px', fontSize: '0.9em' }}
         title={errors.slice(0, 5).map(e => `${e.path}: ${e.message}`).join('\n')}
       >
-        {/* TODO(i18n): wire up t() */}
-        Retry
+        {t('common.retry')}
       </button>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Component, MarkdownRenderer } from 'obsidian';
+import { t } from 'src/i18n';
 import type { ChatTurn } from 'src/types/chat';
 import { usePluginServices } from 'src/ui/hooks/useStore';
 
@@ -33,8 +34,7 @@ export function ChatMessage({ turn, isDraft, onSaveAsNote }: Props) {
         {isUser ? <PlainContent turn={turn} /> : <RenderedContent turn={turn} isDraft={isDraft} />}
       </div>
       {turn.cancelled && (
-        // TODO(i18n): wire up t()
-        <small style={{ color: 'var(--text-muted)' }}>Cancelled</small>
+        <small style={{ color: 'var(--text-muted)' }}>{t('chat.cancelled')}</small>
       )}
       {canSave && (
         <button
@@ -49,10 +49,9 @@ export function ChatMessage({ turn, isDraft, onSaveAsNote }: Props) {
             cursor: 'pointer',
             color: 'var(--text-muted)',
           }}
-          // TODO(i18n): wire up t()
-          title="Save this answer (with citations) as a new note in the vault"
+          title={t('chatMessage.saveAsNoteTitle')}
         >
-          💾 Save as note
+          {t('chatMessage.saveAsNote')}
         </button>
       )}
     </div>
@@ -123,8 +122,7 @@ function replaceCitations(
         const a = document.createElement('a');
         a.href = '#';
         a.textContent = `[${idx}]`;
-        // TODO(i18n): wire up t()
-        a.title = `${citation.headingPath.join(' > ') || '(untitled)'} — ${citation.filePath}\n\n${citation.preview}`;
+        a.title = `${citation.headingPath.join(' > ') || t('citation.untitled')} — ${citation.filePath}\n\n${citation.preview}`;
         a.style.color = 'var(--interactive-accent)';
         a.style.textDecoration = 'none';
         a.style.padding = '0 2px';

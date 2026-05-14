@@ -1,7 +1,7 @@
 // src/ui/components/OfficeFormatPicker.tsx
 import React from 'react';
+import { t } from 'src/i18n';
 
-// TODO(i18n): wire up t()
 export const FORMAT_LABELS: Record<string, string> = {
   md:   'Markdown (.md, .txt)',
   docx: 'Word (.docx)',
@@ -55,8 +55,7 @@ export function OfficeFormatPicker({ value, onChange }: OfficeFormatPickerProps)
       padding: '12px',
       marginBottom: '8px',
     }}>
-      {/* TODO(i18n): wire up t() */}
-      <legend style={{ padding: '0 6px', color: 'var(--text-muted)' }}>Indexed formats</legend>
+      <legend style={{ padding: '0 6px', color: 'var(--text-muted)' }}>{t('officeFormat.legend')}</legend>
       {ALL_FORMATS.map(ext => (
         <label key={ext} style={{ display: 'block', marginBottom: '4px' }}>
           <input
@@ -67,24 +66,21 @@ export function OfficeFormatPicker({ value, onChange }: OfficeFormatPickerProps)
           />
           {' '}{FORMAT_LABELS[ext]}
           {ext === 'md' && (
-            // TODO(i18n): wire up t()
             <span style={{ marginLeft: '6px', color: 'var(--text-muted)', fontSize: '0.85em' }}>
-              (required)
+              {t('officeFormat.required')}
             </span>
           )}
         </label>
       ))}
-      {/* TODO(i18n): wire up t() */}
       <label style={{ display: 'block', marginBottom: '4px' }}>
         <input type="checkbox" checked={imagesEnabled} onChange={toggleImages} />
-        {' '}Images (.png, .jpg, .jpeg, .bmp, .gif)
+        {' '}{t('officeFormat.images')}
         <span style={{ marginLeft: '6px', color: 'var(--text-muted)', fontSize: '0.85em' }}>
-          Requires enabling image indexing in Settings and assigning a Vision task
+          {t('officeFormat.imagesHint')}
         </span>
       </label>
-      {/* TODO(i18n): wire up t() */}
       <div style={{ marginTop: '6px', color: 'var(--text-muted)', fontSize: '0.85em' }}>
-        Changes mark the notebook as dirty — click "Reindex" to apply.
+        {t('officeFormat.dirtyHint')}
       </div>
     </fieldset>
   );

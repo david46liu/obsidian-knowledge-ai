@@ -1,5 +1,6 @@
 // src/ui/components/OfficeOptionsPanel.tsx
 import React from 'react';
+import { t } from 'src/i18n';
 import type { NotebookOfficeOptions } from 'src/types/data';
 
 export interface OfficeOptionsPanelProps {
@@ -17,10 +18,7 @@ export function OfficeOptionsPanel({ value, fileExtensions, onChange }: OfficeOp
   const toggleNotes = () => {
     const next = !includeNotes;
     if (next) {
-      // TODO(i18n): wire up t()
-      const ok = window.confirm(
-        'Enabling this will index speaker notes from all .pptx files, which may then be cited in AI answers. Continue?'
-      );
+      const ok = window.confirm(t('officeOptions.notesConfirm'));
       if (!ok) return;
     }
     onChange({ ...(value ?? {}), includePptxNotes: next });
@@ -33,8 +31,7 @@ export function OfficeOptionsPanel({ value, fileExtensions, onChange }: OfficeOp
       padding: '12px',
       marginBottom: '8px',
     }}>
-      {/* TODO(i18n): wire up t() */}
-      <legend style={{ padding: '0 6px', color: 'var(--text-muted)' }}>Office parsing options</legend>
+      <legend style={{ padding: '0 6px', color: 'var(--text-muted)' }}>{t('officeOptions.legend')}</legend>
       <label style={{
         display: 'block',
         marginBottom: '4px',
@@ -46,18 +43,16 @@ export function OfficeOptionsPanel({ value, fileExtensions, onChange }: OfficeOp
           disabled={!pptxEnabled}
           onChange={toggleNotes}
         />
-        {/* TODO(i18n): wire up t() */}
-        {' '}Include PowerPoint speaker notes
+        {' '}{t('officeOptions.includeNotes')}
       </label>
-      {/* TODO(i18n): wire up t() */}
       <div style={{
         marginLeft: '20px',
         marginTop: '4px',
         color: 'var(--text-muted)',
         fontSize: '0.85em',
       }}>
-        ⚠ Speaker notes often contain private content. When enabled they are indexed by RAG and sent to the LLM. Off by default.
-        {!pptxEnabled && ' (Enable the PowerPoint format first.)'}
+        {t('officeOptions.notesHint')}
+        {!pptxEnabled && ' ' + t('officeOptions.enablePptxFirst')}
       </div>
     </fieldset>
   );

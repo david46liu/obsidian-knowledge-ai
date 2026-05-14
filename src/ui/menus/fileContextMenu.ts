@@ -1,4 +1,5 @@
 import { Menu, Notice, TFile } from 'obsidian';
+import { t } from 'src/i18n';
 import type { PluginServices } from 'src/ui/hooks/useStore';
 import type { Notebook, NotebookId } from 'src/types/data';
 
@@ -35,24 +36,20 @@ export function attachFileContextMenu(
     ?? owners[0].id;
 
   menu.addItem(item => {
-    // TODO(i18n): wire up t()
-    item.setTitle('View chunks in Knowledge AI').setIcon('list-tree')
+    item.setTitle(t('file.context.viewChunks')).setIcon('list-tree')
       .onClick(() => {
         deps.services.openChunksInspector(file.path, targetNotebookId);
       });
   });
 
   menu.addItem(item => {
-    // TODO(i18n): wire up t()
-    item.setTitle('Re-extract this file').setIcon('refresh-cw')
+    item.setTitle(t('fileMenu.reExtract')).setIcon('refresh-cw')
       .onClick(async () => {
         try {
           await deps.services.invalidateFileHash(file.path);
-          // TODO(i18n): wire up t()
-          new Notice(`Marked ${file.name} for re-extraction. Effective on next reindex.`);
+          new Notice(t('fileMenu.markedForReExtract', { name: file.name }));
         } catch (e) {
-          // TODO(i18n): wire up t()
-          new Notice(`Failed: ${e instanceof Error ? e.message : String(e)}`);
+          new Notice(t('fileMenu.failed', { error: e instanceof Error ? e.message : String(e) }));
         }
       });
   });

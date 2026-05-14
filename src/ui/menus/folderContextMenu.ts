@@ -1,5 +1,6 @@
 // src/ui/menus/folderContextMenu.ts
 import { App, Menu, Notice, TFolder } from 'obsidian';
+import { t } from 'src/i18n';
 import type { PluginServices } from 'src/ui/hooks/useStore';
 import type { Notebook } from 'src/types/data';
 import { NotebookFromFolderModal } from 'src/ui/modals/NotebookFromFolderModal';
@@ -25,8 +26,7 @@ export function attachFolderContextMenu(
 
   // 1. 添加为 Notebook 源
   menu.addItem(item => {
-    // TODO(i18n): wire up t()
-    item.setTitle('Add as Notebook source').setIcon('folder-plus');
+    item.setTitle(t('folderMenu.addAsSource')).setIcon('folder-plus');
     if (allNotebooks.length === 0) {
       item.setDisabled(true);
       return;
@@ -46,16 +46,14 @@ export function attachFolderContextMenu(
     } else {
       // Fallback: flat 列出每个 notebook 一项(老 Obsidian)
       item.onClick(() => {
-        // TODO(i18n): wire up t()
-        new Notice('This Obsidian version does not support submenus — add the source from Settings.');
+        new Notice(t('folderMenu.noSubmenuFallback'));
       });
     }
   });
 
   // 2. 新建 Notebook 用此文件夹
   menu.addItem(item => {
-    // TODO(i18n): wire up t()
-    item.setTitle('New Notebook from this folder').setIcon('folder-symlink')
+    item.setTitle(t('folderMenu.newNotebookFromFolder')).setIcon('folder-symlink')
       .onClick(() => {
         new NotebookFromFolderModal(deps.app, folderPath, deps.services).open();
       });
@@ -64,19 +62,16 @@ export function attachFolderContextMenu(
   // 3. 打开 Notebook(仅当被引用时显示)
   if (referencingNotebooks.length === 1) {
     menu.addItem(item => {
-      // TODO(i18n): wire up t()
-      item.setTitle(`Open "${referencingNotebooks[0].name}"`).setIcon('book-open')
+      item.setTitle(t('folderMenu.openNamed', { name: referencingNotebooks[0].name })).setIcon('book-open')
         .onClick(() => {
           deps.services.openChatView(referencingNotebooks[0].id).catch(e =>
-            // TODO(i18n): wire up t()
-            new Notice(`Open failed: ${e instanceof Error ? e.message : String(e)}`)
+            new Notice(t('folderMenu.openFailed', { error: e instanceof Error ? e.message : String(e) }))
           );
         });
     });
   } else if (referencingNotebooks.length > 1) {
     menu.addItem(item => {
-      // TODO(i18n): wire up t()
-      item.setTitle('Open Notebook').setIcon('book-open');
+      item.setTitle(t('folderMenu.openNotebook')).setIcon('book-open');
       const maybe = item as unknown as { setSubmenu?: () => Menu };
       if (typeof maybe.setSubmenu === 'function') {
         const sub = maybe.setSubmenu();
@@ -84,8 +79,7 @@ export function attachFolderContextMenu(
           sub.addItem(it => {
             it.setTitle(nb.name).onClick(() => {
               deps.services.openChatView(nb.id).catch(e =>
-                // TODO(i18n): wire up t()
-                new Notice(`Open failed: ${e instanceof Error ? e.message : String(e)}`)
+                new Notice(t('folderMenu.openFailed', { error: e instanceof Error ? e.message : String(e) }))
               );
             });
           });
@@ -93,8 +87,7 @@ export function attachFolderContextMenu(
       } else {
         item.onClick(() => {
           deps.services.openChatView(referencingNotebooks[0].id).catch(e =>
-            // TODO(i18n): wire up t()
-            new Notice(`Open failed: ${e instanceof Error ? e.message : String(e)}`)
+            new Notice(t('folderMenu.openFailed', { error: e instanceof Error ? e.message : String(e) }))
           );
         });
       }
@@ -104,21 +97,18 @@ export function attachFolderContextMenu(
   // 4. 重新索引相关 Notebook(仅当被引用时显示)
   if (referencingNotebooks.length > 0) {
     menu.addItem(item => {
-      // TODO(i18n): wire up t()
       const label = referencingNotebooks.length === 1
-        ? `Reindex "${referencingNotebooks[0].name}"`
-        : `Reindex ${referencingNotebooks.length} related Notebooks`;
+        ? t('folderMenu.reindexNamed', { name: referencingNotebooks[0].name })
+        : t('folderMenu.reindexMany', { count: referencingNotebooks.length });
       item.setTitle(label).setIcon('refresh-cw')
         .onClick(() => {
           // fire-and-forget,与 main.ts triggerReindexAll 风格一致;失败时每个 notebook 各自报错
           for (const nb of referencingNotebooks) {
             deps.services.reindex(nb.id).catch(e =>
-              // TODO(i18n): wire up t()
-              new Notice(`Reindex of ${nb.name} failed: ${e instanceof Error ? e.message : String(e)}`)
+              new Notice(t('folderMenu.reindexFailed', { name: nb.name, error: e instanceof Error ? e.message : String(e) }))
             );
           }
-          // TODO(i18n): wire up t()
-          new Notice(`Reindex triggered for ${referencingNotebooks.length} Notebook(s) (running in background)`);
+          new Notice(t('folderMenu.reindexTriggered', { count: referencingNotebooks.length }));
         });
     });
   }
@@ -137,10 +127,8 @@ async function addFolderAsSource(
   ];
   try {
     await deps.services.updateNotebook(notebook.id, { sources: newSources });
-    // TODO(i18n): wire up t()
-    new Notice(`Added ${folderPath} as a source of ${notebook.name}`);
+    new Notice(t('folderMenu.addedAsSource', { path: folderPath, name: notebook.name }));
   } catch (e) {
-    // TODO(i18n): wire up t()
-    new Notice(`Add failed: ${e instanceof Error ? e.message : String(e)}`);
+    new Notice(t('folderMenu.addFailed', { error: e instanceof Error ? e.message : String(e) }));
   }
 }

@@ -1,5 +1,6 @@
 // src/ui/menus/ribbonContextMenu.ts
 import { Menu, Notice } from 'obsidian';
+import { t } from 'src/i18n';
 import type { PluginServices } from 'src/ui/hooks/useStore';
 import type { Notebook, NotebookId } from 'src/types/data';
 
@@ -22,13 +23,11 @@ export function showRibbonContextMenu(
 
   if (notebooks.length === 0) {
     menu.addItem(item =>
-      // TODO(i18n): wire up t()
-      item.setTitle('(No notebooks yet)').setDisabled(true)
+      item.setTitle(t('ribbonMenu.empty')).setDisabled(true)
     );
   } else {
     menu.addItem(item =>
-      // TODO(i18n): wire up t()
-      item.setTitle('📓 Active Notebook').setIsLabel(true)
+      item.setTitle(t('ribbonMenu.activeHeader')).setIsLabel(true)
     );
     for (const nb of notebooks) {
       menu.addItem(item =>
@@ -36,27 +35,23 @@ export function showRibbonContextMenu(
           .setIcon(nb.id === activeId ? 'check' : '')
           .onClick(() => {
             deps.setActiveNotebookId(nb.id);
-            // TODO(i18n): wire up t()
-            new Notice(`Switched to ${nb.name}`);
+            new Notice(t('ribbonMenu.switchedTo', { name: nb.name }));
           })
       );
     }
     menu.addSeparator();
     menu.addItem(item => {
-      // TODO(i18n): wire up t()
-      item.setTitle('⚙ Reindex active Notebook')
+      item.setTitle(t('ribbonMenu.reindexActive'))
         .setIcon('refresh-cw');
       if (!activeId) item.setDisabled(true);
       else item.onClick(() => {
         deps.services.reindex(activeId).catch(e =>
-          // TODO(i18n): wire up t()
-          new Notice(`Failed: ${e instanceof Error ? e.message : String(e)}`)
+          new Notice(t('ribbonMenu.reindexFailed', { error: e instanceof Error ? e.message : String(e) }))
         );
       });
     });
     menu.addItem(item =>
-      // TODO(i18n): wire up t()
-      item.setTitle('🌐 Reindex all Notebooks').setIcon('refresh-ccw')
+      item.setTitle(t('ribbonMenu.reindexAll')).setIcon('refresh-ccw')
         .onClick(() => deps.reindexAll())
     );
   }
@@ -64,8 +59,7 @@ export function showRibbonContextMenu(
   // I4 (per spec §8.3):打开 Settings tab
   menu.addSeparator();
   menu.addItem(item =>
-    // TODO(i18n): wire up t()
-    item.setTitle('⚙ Settings').setIcon('settings')
+    item.setTitle(t('ribbonMenu.settings')).setIcon('settings')
       .onClick(() => deps.openSettings())
   );
 

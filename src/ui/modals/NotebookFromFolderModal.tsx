@@ -2,6 +2,7 @@
 import { App, Modal, Notice } from 'obsidian';
 import React from 'react';
 import { createRoot, type Root } from 'react-dom/client';
+import { t } from 'src/i18n';
 import type { PluginServices } from 'src/ui/hooks/useStore';
 import { ALL_FORMATS, FORMAT_LABELS } from 'src/ui/components/OfficeFormatPicker';
 
@@ -18,8 +19,7 @@ export class NotebookFromFolderModal extends Modal {
 
   onOpen(): void {
     const folderName = this.folderPath.split('/').filter(Boolean).pop() ?? this.folderPath;
-    // TODO(i18n): wire up t()
-    this.titleEl.setText(`New Notebook · ${this.folderPath}`);
+    this.titleEl.setText(t('newNotebookModal.title', { path: this.folderPath }));
     this.root = createRoot(this.contentEl);
     this.root.render(
       <NotebookFromFolderForm
@@ -64,12 +64,10 @@ function NotebookFromFolderForm({ folderPath, defaultName, services, onDone }: F
         enabled: true,   // I2: spec §8.1 要求 enabled:true
       });
       await services.updateNotebook(nb.id, { fileExtensions: exts });
-      // TODO(i18n): wire up t()
-      new Notice(`Created Notebook "${name}"`);
+      new Notice(t('newNotebookModal.created', { name }));
       onDone();
     } catch (e) {
-      // TODO(i18n): wire up t()
-      new Notice(`Create failed: ${e instanceof Error ? e.message : String(e)}`);
+      new Notice(t('newNotebookModal.createFailed', { error: e instanceof Error ? e.message : String(e) }));
       setSubmitting(false);
     }
   };
@@ -85,8 +83,7 @@ function NotebookFromFolderForm({ folderPath, defaultName, services, onDone }: F
   return (
     <div style={{ padding: '8px 0' }}>
       <div style={{ marginBottom: '12px' }}>
-        {/* TODO(i18n): wire up t() */}
-        <label>Name</label>
+        <label>{t('newNotebookModal.name')}</label>
         <input
           type="text"
           value={name}
@@ -95,15 +92,13 @@ function NotebookFromFolderForm({ folderPath, defaultName, services, onDone }: F
         />
       </div>
       <div style={{ marginBottom: '12px' }}>
-        {/* TODO(i18n): wire up t() */}
         <label>
           <input type="checkbox" checked={recursive} onChange={e => setRecursive(e.target.checked)} />
-          {' '}Include subfolders
+          {' '}{t('newNotebookModal.recursive')}
         </label>
       </div>
       <div style={{ marginBottom: '12px' }}>
-        {/* TODO(i18n): wire up t() */}
-        <label>Indexed formats</label>
+        <label>{t('newNotebookModal.indexedFormats')}</label>
         <div style={{ marginTop: '4px' }}>
           {ALL_FORMATS.map(ext => (
             <label key={ext} style={{ display: 'block' }}>
@@ -119,11 +114,9 @@ function NotebookFromFolderForm({ folderPath, defaultName, services, onDone }: F
         </div>
       </div>
       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-        {/* TODO(i18n): wire up t() */}
-        <button onClick={onDone} disabled={submitting}>Cancel</button>
-        {/* TODO(i18n): wire up t() */}
+        <button onClick={onDone} disabled={submitting}>{t('common.cancel')}</button>
         <button onClick={submit} disabled={!name.trim() || submitting}>
-          {submitting ? 'Creating…' : 'Create'}
+          {submitting ? t('newNotebookModal.creating') : t('newNotebookModal.create')}
         </button>
       </div>
     </div>

@@ -14,6 +14,7 @@
  *   - 空 markdown 或解析无页 → 友好提示
  */
 import React, { useMemo, useState } from 'react';
+import { t } from 'src/i18n';
 import type { Citation } from 'src/types/chat';
 import { splitMarpSlides } from 'src/generation/marpSplit';
 import { CitationLink } from 'src/ui/components/CitationLink';
@@ -30,8 +31,7 @@ export function PptViewer({ markdown, citations }: Props) {
   if (slides.length === 0) {
     return (
       <div style={{ color: 'var(--text-muted)', padding: '12px' }}>
-        {/* TODO(i18n): wire up t() */}
-        (No slide content)
+        {t('ppt.empty')}
       </div>
     );
   }
@@ -64,8 +64,7 @@ export function PptViewer({ markdown, citations }: Props) {
               display: 'flex',
               flexDirection: 'column',
             }}
-            // TODO(i18n): wire up t()
-            title="Click to expand"
+            title={t('ppt.expandTitle')}
           >
             {/* 16:9 区域:padding-top 56.25% 撑开 */}
             <div
@@ -104,11 +103,9 @@ export function PptViewer({ markdown, citations }: Props) {
                 justifyContent: 'space-between',
               }}
             >
-              {/* TODO(i18n): wire up t() */}
-              <span>Slide {i + 1} of {slides.length}</span>
+              <span>{t('ppt.slideOf', { current: i + 1, total: slides.length })}</span>
               {detectMermaid(slide) && (
-                // TODO(i18n): wire up t()
-                <span title="Contains a mermaid diagram (renders after exporting to the vault)">📊 Diagram</span>
+                <span title={t('ppt.mermaidTitle')}>{t('ppt.mermaidBadge')}</span>
               )}
             </div>
           </div>
@@ -144,24 +141,21 @@ export function PptViewer({ markdown, citations }: Props) {
               disabled={zoomIndex === 0}
               style={{ padding: '4px 12px' }}
             >
-              {/* TODO(i18n): wire up t() */}
-              Previous
+              {t('ppt.previous')}
             </button>
             <button
               onClick={next}
               disabled={zoomIndex === slides.length - 1}
               style={{ padding: '4px 12px' }}
             >
-              {/* TODO(i18n): wire up t() */}
-              Next
+              {t('ppt.next')}
             </button>
             <span style={{ marginLeft: '12px', fontSize: '0.9em' }}>
               {zoomIndex + 1} / {slides.length}
             </span>
             <div style={{ flex: 1 }} />
             <button onClick={closeZoom} style={{ padding: '4px 12px' }}>
-              {/* TODO(i18n): wire up t() */}
-              Close
+              {t('common.close')}
             </button>
           </div>
 

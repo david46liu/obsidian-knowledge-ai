@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { t } from 'src/i18n';
 import type { Provider, TaskName, TaskAssignment } from 'src/types/data';
 
 interface TaskAssignmentPanelProps {
@@ -11,14 +12,13 @@ interface TaskAssignmentPanelProps {
 
 const ACTIVE_TASKS: TaskName[] = ['chat', 'rerank', 'summary', 'vision'];
 const INACTIVE_TASKS: TaskName[] = ['embedding', 'tts'];
-// TODO(i18n): wire up t()
-const TASK_LABELS: Record<TaskName, string> = {
-  chat: 'Chat',
-  rerank: 'Rerank',
-  summary: 'Summary',
-  embedding: 'Embedding',
-  tts: 'TTS',
-  vision: 'Vision',
+const TASK_LABEL_KEYS: Record<TaskName, string> = {
+  chat: 'taskPanel.label.chat',
+  rerank: 'taskPanel.label.rerank',
+  summary: 'taskPanel.label.summary',
+  embedding: 'taskPanel.label.embedding',
+  tts: 'taskPanel.label.tts',
+  vision: 'taskPanel.label.vision',
 };
 
 function TaskRow({
@@ -40,10 +40,9 @@ function TaskRow({
   useEffect(() => { setDraftModel(persistedModel); }, [persistedModel]);
 
   const selectedProvider = providers.find(p => p.id === providerId);
-  // TODO(i18n): wire up t()
   const placeholder = selectedProvider
-    ? `Default: ${selectedProvider.defaultModel}`
-    : 'Model name';
+    ? t('taskPanel.modelDefault', { model: selectedProvider.defaultModel })
+    : t('taskPanel.modelPlaceholder');
 
   const handleProviderChange = (pid: string) => {
     if (!pid) { onChange(task, null); return; }
@@ -58,10 +57,9 @@ function TaskRow({
 
   return (
     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px', opacity: disabled ? 0.5 : 1 }}>
-      <span style={{ minWidth: '80px' }}>{TASK_LABELS[task]}</span>
+      <span style={{ minWidth: '80px' }}>{t(TASK_LABEL_KEYS[task])}</span>
       <select value={providerId} disabled={disabled} onChange={e => handleProviderChange(e.target.value)} style={{ flex: 1 }}>
-        {/* TODO(i18n): wire up t() */}
-        <option value="">— Select provider —</option>
+        <option value="">{t('taskPanel.providerEmpty')}</option>
         {providers.map(p => <option key={p.id} value={p.id}>{p.displayName}</option>)}
       </select>
       <input
@@ -90,9 +88,8 @@ export function TaskAssignmentPanel({
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          {/* TODO(i18n): wire up t() */}
-          <span>Main model</span>
-          <button onClick={onToggleAdvanced}>Advanced</button>
+          <span>{t('taskPanel.mainModel')}</span>
+          <button onClick={onToggleAdvanced}>{t('taskPanel.advanced')}</button>
         </div>
         <TaskRow
           task="chat"
@@ -107,9 +104,8 @@ export function TaskAssignmentPanel({
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        {/* TODO(i18n): wire up t() */}
-        <span>Task model assignments</span>
-        <button onClick={onToggleAdvanced}>Simple mode</button>
+        <span>{t('taskPanel.assignmentsTitle')}</span>
+        <button onClick={onToggleAdvanced}>{t('taskPanel.simpleMode')}</button>
       </div>
       {ACTIVE_TASKS.map(task => (
         <TaskRow

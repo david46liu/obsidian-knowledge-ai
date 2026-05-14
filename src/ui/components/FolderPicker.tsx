@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from 'src/i18n';
 
 interface FolderPickerProps {
   value: string;
@@ -15,8 +16,7 @@ export function FolderPicker({ value, folders, onChange, disabled }: FolderPicke
       onChange={e => onChange(e.target.value)}
       style={{ width: '100%' }}
     >
-      {/* TODO(i18n): wire up t() */}
-      <option value="">— Select a folder —</option>
+      <option value="">{t('folderPicker.empty')}</option>
       {folders.map(f => <option key={f} value={f}>{f}</option>)}
     </select>
   );

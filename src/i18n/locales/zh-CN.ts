@@ -82,6 +82,21 @@ const zhCN: Record<string, string> = {
   'settings.tasks.useProviderDefault': '使用 Provider 默认',
   'settings.tasks.unassigned': '— 未分配 —',
 
+  // ─── Task assignment panel (TaskAssignmentPanel.tsx) ─────────────────
+  'taskPanel.label.chat': 'Chat',
+  'taskPanel.label.rerank': '重排序',
+  'taskPanel.label.summary': '摘要',
+  'taskPanel.label.embedding': 'Embedding',
+  'taskPanel.label.tts': 'TTS',
+  'taskPanel.label.vision': 'Vision',
+  'taskPanel.modelDefault': '默认:{model}',
+  'taskPanel.modelPlaceholder': '模型名称',
+  'taskPanel.providerEmpty': '— 选择 Provider —',
+  'taskPanel.mainModel': '主模型',
+  'taskPanel.advanced': '高级',
+  'taskPanel.assignmentsTitle': '任务模型分配',
+  'taskPanel.simpleMode': '简易模式',
+
   // ─── Settings - Vector retrieval ─────────────────────────────────────
   'settings.vector.heading': '向量检索',
   'settings.vector.enable': '启用向量检索',
@@ -122,6 +137,27 @@ const zhCN: Record<string, string> = {
   'settings.image.ocrInitializing': '初始化中…',
   'settings.image.ocrReady': '就绪',
   'settings.image.ocrError': '错误',
+
+  // ─── Image section (ImageSection.tsx) ────────────────────────────────
+  'image.ocr.enableName': '启用 OCR(Tesseract.js)',
+  'image.ocr.enableDesc': '本地从图片提取文字。首次使用时按需下载语言包。',
+  'image.ocr.langsName': 'OCR 语言',
+  'image.ocr.langsDesc': '至少选择一种。首次使用时从 tesseract.js CDN 下载语言包。',
+  'image.ocr.statusName': 'OCR 状态',
+  'image.ocr.initButton': '初始化 / 下载语言包',
+  'image.ocr.downloading': '下载中…',
+  'image.ocr.statusReady': '● 就绪',
+  'image.ocr.statusFailed': '✗ 初始化失败',
+  'image.vision.enableName': '启用 vision 描述',
+  'image.vision.enableDesc': '使用分配给 "Vision" 任务的 LLM 描述图片内容。',
+  'image.maxSize.name': '图片大小上限(MB)',
+  'image.maxSize.desc': '超过此尺寸的图片会被跳过,避免阻塞索引。',
+  'image.tip.enableExtensions': '提示:Notebook 默认不索引图片。请先在 notebook 编辑器中启用 png/jpg/jpeg/bmp/gif 扩展名。',
+  'image.lang.chiSim': '简体中文',
+  'image.lang.chiTra': '繁体中文',
+  'image.lang.eng': '英文',
+  'image.lang.jpn': '日文',
+  'image.lang.kor': '韩文',
 
   // ─── Settings - Notebooks ────────────────────────────────────────────
   'settings.notebooks.heading': 'Notebooks',
@@ -210,6 +246,78 @@ const zhCN: Record<string, string> = {
   'chat.error.notebookEmpty': 'Notebook 为空或未索引,请先索引。',
   'chat.error.noChatModel': '未给"chat"任务分配模型。请到设置页指派。',
 
+  // ─── New notebook from folder modal (NotebookFromFolderModal.tsx) ────
+  'newNotebookModal.title': '新建 Notebook · {path}',
+  'newNotebookModal.created': '已创建 Notebook"{name}"',
+  'newNotebookModal.createFailed': '创建失败:{error}',
+  'newNotebookModal.name': '名称',
+  'newNotebookModal.recursive': '包含子文件夹',
+  'newNotebookModal.indexedFormats': '索引格式',
+  'newNotebookModal.create': '创建',
+  'newNotebookModal.creating': '创建中…',
+
+  // ─── Chunks inspector modal (ChunksInspectorModal.tsx) ───────────────
+  'chunksInspector.title': 'Chunks · {path}',
+  'chunksInspector.notIndexed': '该文件尚未索引(或属于其他 notebook)。',
+  'chunksInspector.errorPrefix': '错误:{error}',
+  'chunksInspector.summary': '{count} 个 chunk · 文件哈希:{hash}…',
+  'chunksInspector.slide': '第 {index} 张幻灯片',
+  'chunksInspector.notes': '备注',
+  'chunksInspector.sheet': '工作表 {name}',
+  'chunksInspector.row': '行 {from}-{to}',
+  'chunksInspector.page': '第 {from}-{to} 页',
+
+  // ─── Folder picker (FolderPicker.tsx) ────────────────────────────────
+  'folderPicker.empty': '— 选择文件夹 —',
+
+  // ─── Provider card (ProviderCard.tsx) ────────────────────────────────
+  'providerCard.disabledTag': '[已禁用]',
+  'providerCard.test': '测试',
+  'providerCard.testing': '测试中…',
+  'providerCard.deleteConfirm': '删除 {name}?',
+
+  // ─── Office format picker (OfficeFormatPicker.tsx) ───────────────────
+  'officeFormat.legend': '索引格式',
+  'officeFormat.required': '(必选)',
+  'officeFormat.images': '图片(.png, .jpg, .jpeg, .bmp, .gif)',
+  'officeFormat.imagesHint': '需要在"设置"中启用图片索引,并为 Vision 任务分配模型',
+  'officeFormat.dirtyHint': '更改后 Notebook 标记为待重建 — 点击"重新索引"生效。',
+
+  // ─── Office options panel (OfficeOptionsPanel.tsx) ───────────────────
+  'officeOptions.legend': 'Office 解析选项',
+  'officeOptions.includeNotes': '包含 PowerPoint 演讲者备注',
+  'officeOptions.notesConfirm': '启用后会索引所有 .pptx 文件的演讲者备注,这些内容可能会被 AI 引用。是否继续?',
+  'officeOptions.notesHint': '⚠ 演讲者备注常含私密内容。启用后会被 RAG 索引并发给 LLM。默认关闭。',
+  'officeOptions.enablePptxFirst': '(请先启用 PowerPoint 格式。)',
+
+  // ─── Error bars (TransientErrorBar.tsx, PersistentErrorBar.tsx) ──────
+  'errorBar.transientSummary': '⚠ 本次有 {count} 个文件未索引(可重试)',
+  'errorBar.persistentSummary': '⛔ {count} 个文件解析失败(重试无效,请修复源文件)',
+  'errorBar.view': '查看',
+  'errorBar.hide': '收起',
+
+  // ─── PPT viewer (PptViewer.tsx) ──────────────────────────────────────
+  'ppt.empty': '(无幻灯片内容)',
+  'ppt.expandTitle': '点击放大',
+  'ppt.slideOf': '第 {current} / {total} 张',
+  'ppt.mermaidBadge': '📊 图表',
+  'ppt.mermaidTitle': '包含 mermaid 图表(导出到 vault 后渲染)',
+  'ppt.previous': '上一页',
+  'ppt.next': '下一页',
+
+  // ─── Mind map (MindMapViewer.tsx) ────────────────────────────────────
+  'mindMap.parseFailed': '⚠ AI 没有按严格大纲格式输出,显示原文。',
+  'mindMap.parserWarnings': '解析警告({count})',
+  'mindMap.help': '缩放:滚轮 · 平移:左键拖拽 · 折叠:点击节点(▼/▶)· 当前:{scale}x · 节点:{nodes}',
+
+  // ─── Generate menu (GenerateMenu.tsx) ────────────────────────────────
+  'generateMenu.generating': '生成中…',
+  'generateMenu.generate': '生成 {label}',
+
+  // ─── Chat message (ChatMessage.tsx) ──────────────────────────────────
+  'chatMessage.saveAsNote': '💾 保存为笔记',
+  'chatMessage.saveAsNoteTitle': '把这条回答(含引用)保存为 vault 中的一条笔记',
+
   // ─── Artifacts tab ───────────────────────────────────────────────────
   'artifact.tab.label': '产物',
   'artifact.menu.generate': '生成',
@@ -239,6 +347,18 @@ const zhCN: Record<string, string> = {
   'artifact.error.cancelled': '已取消',
   'artifact.error.notebookNotFound': '找不到 Notebook:{id}',
 
+  // ─── Artifact card (ArtifactCard.tsx) ────────────────────────────────
+  'artifactCard.kind.summary': '摘要',
+  'artifactCard.kind.studyGuide': '学习指南',
+  'artifactCard.kind.timeline': '时间线',
+  'artifactCard.kind.faq': '常见问答',
+  'artifactCard.kind.briefing': '简报',
+  'artifactCard.kind.mindMap': '思维导图',
+  'artifactCard.kind.ppt': 'PPT 幻灯片',
+  'artifactCard.truncatedTag': '(资料已截断)',
+  'artifactCard.truncatedTitle': '资料源被截断(只把前面一部分文档喂给 LLM)。输出本身完整,但可能漏掉后段文档。缩小 notebook 范围可获得更全的覆盖。',
+  'artifactCard.exportTitle': '导出到 vault',
+
   // ─── Indexing / errors ───────────────────────────────────────────────
   'index.error.notebookNotFound': '找不到 Notebook:{id}',
   'index.error.scan': '扫描失败:{error}',
@@ -260,6 +380,47 @@ const zhCN: Record<string, string> = {
   'settings.advanced.clearOk': '缓存已清除,所有 Notebook 已标记为待重建。',
   'settings.advanced.clearFailed': '清除失败:{error}',
   'settings.advanced.openDevTools': '打开 DevTools',
+
+  // ─── Plugin main (main.ts) ───────────────────────────────────────────
+  'main.error.createNotebookFirst': '请先创建并选中一个 Notebook。',
+  'main.error.indexFileMissing': '找不到索引文件(尚未索引?)。',
+  'main.exportMeta': '生成时间 {time} · 模型 {model}{truncated}',
+  'main.exportMeta.truncated': '(已截断)',
+  'main.model.alreadyDownloading': '模型正在下载,请稍候。',
+  'main.model.ready': '模型已就绪。',
+  'main.model.downloadComplete': '模型下载完成。',
+  'main.model.downloadFailed': '模型下载失败:{error}',
+  'main.ocr.notReady': 'OCR 未启用,或其 worker 未初始化。',
+  'main.reindexTriggered': '已触发 {count} 个 Notebook 的重新索引(后台运行)',
+  'main.viewDisplayText': 'Knowledge AI 聊天',
+
+  // ─── Folder context menu (folderContextMenu.ts) ──────────────────────
+  'folderMenu.addAsSource': '添加为 Notebook 源',
+  'folderMenu.noSubmenuFallback': '当前 Obsidian 版本不支持子菜单 — 请到设置页添加源。',
+  'folderMenu.newNotebookFromFolder': '从该文件夹新建 Notebook',
+  'folderMenu.openNamed': '打开"{name}"',
+  'folderMenu.openNotebook': '打开 Notebook',
+  'folderMenu.openFailed': '打开失败:{error}',
+  'folderMenu.reindexNamed': '重新索引"{name}"',
+  'folderMenu.reindexMany': '重新索引 {count} 个相关 Notebook',
+  'folderMenu.reindexFailed': '{name} 重新索引失败:{error}',
+  'folderMenu.reindexTriggered': '已触发 {count} 个 Notebook 的重新索引(后台运行)',
+  'folderMenu.addedAsSource': '已将 {path} 添加为 {name} 的源',
+  'folderMenu.addFailed': '添加失败:{error}',
+
+  // ─── File context menu (fileContextMenu.ts) ──────────────────────────
+  'fileMenu.reExtract': '重新提取该文件',
+  'fileMenu.markedForReExtract': '已将 {name} 标记为待重新提取,下次重新索引时生效。',
+  'fileMenu.failed': '失败:{error}',
+
+  // ─── Ribbon context menu (ribbonContextMenu.ts) ──────────────────────
+  'ribbonMenu.empty': '(暂无 Notebook)',
+  'ribbonMenu.activeHeader': '📓 当前 Notebook',
+  'ribbonMenu.switchedTo': '已切换到 {name}',
+  'ribbonMenu.reindexActive': '⚙ 重新索引当前 Notebook',
+  'ribbonMenu.reindexAll': '🌐 重新索引所有 Notebook',
+  'ribbonMenu.reindexFailed': '失败:{error}',
+  'ribbonMenu.settings': '⚙ 设置',
 
   // ─── Misc UI strings ─────────────────────────────────────────────────
   'embedding.coverage.title': '向量覆盖',

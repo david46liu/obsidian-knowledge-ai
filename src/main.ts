@@ -567,11 +567,9 @@ export default class NotebookAIPlugin extends Plugin {
       },
 
       exportIndex: async (notebookId) => {
-        // TODO(i18n): wire up t()
-        if (!notebookId) throw new Error('Create and select a Notebook first.');
+        if (!notebookId) throw new Error(t('main.error.createNotebookFirst'));
         const raw = await dataStore.read(paths.indexFile(notebookId));
-        // TODO(i18n): wire up t()
-        if (!raw) throw new Error('Index file not found (not indexed yet?).');
+        if (!raw) throw new Error(t('main.error.indexFileMissing'));
         const ts = new Date().toISOString().replace(/[:.]/g, '-');
         const vaultPath = `notebook-ai-export-${notebookId.slice(0, 8)}-${ts}.json`;
         await this.app.vault.create(vaultPath, raw);
@@ -653,8 +651,11 @@ export default class NotebookAIPlugin extends Plugin {
           const slug = a.title.replace(/[\\/:*?"<>|]/g, '_').slice(0, 50);
           const ts = new Date(a.generatedAt).toISOString().replace(/[:.]/g, '-');
           const vaultPath = `notebook-ai-${a.kind}-${slug}-${ts}.md`;
-          // TODO(i18n): wire up t()
-          const meta = `Generated ${new Date(a.generatedAt).toLocaleString()} · model ${a.modelUsed}${a.truncated ? ' (truncated)' : ''}`;
+          const meta = t('main.exportMeta', {
+            time: new Date(a.generatedAt).toLocaleString(),
+            model: a.modelUsed,
+            truncated: a.truncated ? ' ' + t('main.exportMeta.truncated') : '',
+          });
           const md = a.kind === 'ppt'
             ? buildMarpPptMarkdown(meta, a.content)
             : `# ${a.title}\n\n> ${meta}\n\n${a.content}\n`;
@@ -703,13 +704,11 @@ export default class NotebookAIPlugin extends Plugin {
           });
         }
         if (this.embeddingDownloadState === 'downloading') {
-          // TODO(i18n): wire up t()
-          new Notice('Model is already downloading. Please wait.');
+          new Notice(t('main.model.alreadyDownloading'));
           return;
         }
         if (this.embeddingDownloadState === 'ready') {
-          // TODO(i18n): wire up t()
-          new Notice('Model is ready.');
+          new Notice(t('main.model.ready'));
           return;
         }
         this.embeddingDownloadState = 'downloading';
@@ -721,15 +720,13 @@ export default class NotebookAIPlugin extends Plugin {
             await this.embeddingWorkerHost!.init(modelId, pluginDir, wasmBytes);
             this.embeddingDownloadState = 'ready';
             this.embeddingDownloadProgress = 100;
-            // TODO(i18n): wire up t()
-            new Notice('Model download complete.');
+            new Notice(t('main.model.downloadComplete'));
           } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
             this.embeddingDownloadState = 'error';
             this.embeddingDownloadError = msg;
             logger.warn(`model download failed: ${msg}`);
-            // TODO(i18n): wire up t()
-            new Notice(`Model download failed: ${msg}`);
+            new Notice(t('main.model.downloadFailed', { error: msg }));
           }
         })();
       },
@@ -790,8 +787,7 @@ export default class NotebookAIPlugin extends Plugin {
         if (this.ocrStatus === 'initializing' || this.ocrStatus === 'ready') return;
         const cfg = this.notebookService.getPluginData().imageConfig;
         if (!cfg?.ocrEnabled || !this.ocrWorkerHost) {
-          // TODO(i18n): wire up t()
-          this.ocrErrorMessage = 'OCR is not enabled, or its worker is not initialized.';
+          this.ocrErrorMessage = t('main.ocr.notReady');
           this.ocrStatus = 'error';
           return;
         }
@@ -853,8 +849,7 @@ export default class NotebookAIPlugin extends Plugin {
           }
         }
         await this.app.vault.create(candidate, content);
-        // TODO(i18n): wire up t()
-        new Notice(`Saved to ${candidate}`);
+        new Notice(t('chat.savedTo', { path: candidate }));
         return { vaultPath: candidate };
       },
     };
@@ -867,8 +862,7 @@ export default class NotebookAIPlugin extends Plugin {
       for (const id of ids) {
         this.indexService.reindex(id).catch(e => logger.warn(`reindex ${id} failed: ${e}`));
       }
-      // TODO(i18n): wire up t()
-      new Notice(`Reindex triggered for ${ids.length} Notebook(s) (running in background)`);
+      new Notice(t('main.reindexTriggered', { count: ids.length }));
     };
 
     // Helper:从 ribbon / command 触发"打开主视图"
@@ -877,16 +871,14 @@ export default class NotebookAIPlugin extends Plugin {
       const firstId = useNotebookAIStore.getState().notebooks[0]?.id;
       const targetId = activeId ?? firstId;
       if (!targetId) {
-        // TODO(i18n): wire up t()
-        new Notice('Create a Notebook first.');
+        new Notice(t('main.error.createNotebookFirst'));
         return;
       }
       services.openChatView(targetId).catch(e => logger.error(`openChatView: ${e}`));
     };
 
     // Ribbon icon
-    // TODO(i18n): wire up t()
-    const ribbonEl = this.addRibbonIcon('book-marked', 'Knowledge AI', () => openMainView());
+    const ribbonEl = this.addRibbonIcon('book-marked', t('plugin.name'), () => openMainView());
 
     // I6 修正:用 registerDomEvent 让 Obsidian 在 unload 时自动清理 listener
     this.registerDomEvent(ribbonEl, 'contextmenu', (evt) => {
@@ -909,7 +901,7 @@ export default class NotebookAIPlugin extends Plugin {
     // 全库重索引 command(沿用 fire-and-forget)
     this.addCommand({
       id: 'reindex-all-notebooks',
-      name: 'Reindex all notebooks',
+      name: t('plugin.command.reindexAll'),
       callback: () => triggerReindexAll(),
     });
 
@@ -942,7 +934,7 @@ export default class NotebookAIPlugin extends Plugin {
     // ── 19. 命令注册 ──────────────────────────────────────────
     this.addCommand({
       id: 'reindex-active-notebook',
-      name: 'Reindex active notebook',
+      name: t('plugin.command.reindexActive'),
       callback: () => {
         const id = useNotebookAIStore.getState().activeNotebookId;
         if (id) this.indexService.reindex(id).catch(e => logger.error(`reindex error: ${e}`));
@@ -1075,8 +1067,7 @@ class NotebookAIChatItemView extends ItemView {
   }
 
   getViewType(): string { return NotebookAIChatItemView.VIEW_TYPE; }
-  // TODO(i18n): wire up t()
-  getDisplayText(): string { return 'Knowledge AI Chat'; }
+  getDisplayText(): string { return t('main.viewDisplayText'); }
   getIcon(): string { return 'message-square'; }
 
   async onOpen(): Promise<void> {

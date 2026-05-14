@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from 'src/i18n';
 import type { ArtifactKind } from 'src/types/artifact';
 import { GENERATORS } from 'src/generation/generators';
 
@@ -25,16 +26,14 @@ export function GenerateMenu({ disabled, streamingKind, onGenerate, onCancel }: 
             key={it.kind}
             onClick={() => onGenerate(it.kind)}
             disabled={disabled || !!streamingKind}
-            // TODO(i18n): wire up t()
-            title={isCurrent ? 'Generating…' : `Generate ${it.label}`}
+            title={isCurrent ? t('generateMenu.generating') : t('generateMenu.generate', { label: it.label })}
           >
             {isCurrent ? `${it.label}...` : it.label}
           </button>
         );
       })}
       {streamingKind && onCancel && (
-        // TODO(i18n): wire up t()
-        <button onClick={onCancel} style={{ marginLeft: 'auto' }}>Cancel</button>
+        <button onClick={onCancel} style={{ marginLeft: 'auto' }}>{t('common.cancel')}</button>
       )}
     </div>
   );

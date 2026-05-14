@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from 'src/i18n';
 import type { Citation } from 'src/types/chat';
 import { usePluginServices } from 'src/ui/hooks/useStore';
 
@@ -8,8 +9,7 @@ interface Props {
 
 export function CitationLink({ citation }: Props) {
   const services = usePluginServices();
-  // TODO(i18n): wire up t()
-  const tooltip = `${citation.headingPath.join(' > ') || '(untitled)'} — ${citation.filePath}\n\n${citation.preview}`;
+  const tooltip = `${citation.headingPath.join(' > ') || t('citation.untitled')} — ${citation.filePath}\n\n${citation.preview}`;
   return (
     <a
       href="#"

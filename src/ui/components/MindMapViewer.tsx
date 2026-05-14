@@ -22,6 +22,7 @@
  *   - SVG <foreignObject> 用于在节点旁渲染 React 的 CitationLink。
  */
 import React, { useMemo, useRef, useState } from 'react';
+import { t } from 'src/i18n';
 import type { Citation } from 'src/types/chat';
 import type { MindNode } from 'src/generation/mindmap';
 import { parseMindMap } from 'src/generation/mindmap';
@@ -144,8 +145,7 @@ export function MindMapViewer({ markdown, citations }: Props) {
             marginBottom: '8px',
           }}
         >
-          {/* TODO(i18n): wire up t() */}
-          ⚠ The AI did not produce a strict outline format. Showing raw output.
+          {t('mindMap.parseFailed')}
         </div>
         <pre style={{ whiteSpace: 'pre-wrap' }}>{markdown}</pre>
       </div>
@@ -181,8 +181,7 @@ export function MindMapViewer({ markdown, citations }: Props) {
             color: 'var(--text-muted)',
           }}
         >
-          {/* TODO(i18n): wire up t() */}
-          <summary>Parser warnings ({errors.length})</summary>
+          <summary>{t('mindMap.parserWarnings', { count: errors.length })}</summary>
           <ul>
             {errors.slice(0, 10).map((e, i) => (
               <li key={i}>{e}</li>
@@ -300,9 +299,7 @@ export function MindMapViewer({ markdown, citations }: Props) {
           color: 'var(--text-muted)',
         }}
       >
-        {/* TODO(i18n): wire up t() */}
-        Zoom: scroll · Pan: left-drag · Collapse: click a node (▼/▶) · Current:
-        {scale.toFixed(2)}x · Nodes: {layout!.nodes.length}
+        {t('mindMap.help', { scale: scale.toFixed(2), nodes: layout!.nodes.length })}
       </div>
     </div>
   );

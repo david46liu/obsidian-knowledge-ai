@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { t } from 'src/i18n';
 import type { NotebookPersistentFileError } from 'src/types/data';
 
 export interface PersistentErrorBarProps {
@@ -23,16 +24,14 @@ export function PersistentErrorBar({ errors }: PersistentErrorBarProps) {
         alignItems: 'center',
         gap: '8px',
       }}>
-        {/* TODO(i18n): wire up t() */}
         <span>
-          ⛔ {errors.length} file(s) failed to parse (retrying won't help — fix the source files)
+          {t('errorBar.persistentSummary', { count: errors.length })}
         </span>
         <button
           onClick={() => setExpanded(e => !e)}
           style={{ padding: '2px 10px', fontSize: '0.9em' }}
         >
-          {/* TODO(i18n): wire up t() */}
-          {expanded ? 'Hide' : 'View'}
+          {expanded ? t('errorBar.hide') : t('errorBar.view')}
         </button>
       </div>
       {expanded && (

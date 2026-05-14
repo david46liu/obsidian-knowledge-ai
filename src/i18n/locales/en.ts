@@ -84,6 +84,21 @@ const en: Record<string, string> = {
   'settings.tasks.useProviderDefault': 'Use provider default',
   'settings.tasks.unassigned': '— Not assigned —',
 
+  // ─── Task assignment panel (TaskAssignmentPanel.tsx) ─────────────────
+  'taskPanel.label.chat': 'Chat',
+  'taskPanel.label.rerank': 'Rerank',
+  'taskPanel.label.summary': 'Summary',
+  'taskPanel.label.embedding': 'Embedding',
+  'taskPanel.label.tts': 'TTS',
+  'taskPanel.label.vision': 'Vision',
+  'taskPanel.modelDefault': 'Default: {model}',
+  'taskPanel.modelPlaceholder': 'Model name',
+  'taskPanel.providerEmpty': '— Select provider —',
+  'taskPanel.mainModel': 'Main model',
+  'taskPanel.advanced': 'Advanced',
+  'taskPanel.assignmentsTitle': 'Task model assignments',
+  'taskPanel.simpleMode': 'Simple mode',
+
   // ─── Settings - Vector retrieval ─────────────────────────────────────
   'settings.vector.heading': 'Vector retrieval',
   'settings.vector.enable': 'Enable vector retrieval',
@@ -124,6 +139,27 @@ const en: Record<string, string> = {
   'settings.image.ocrInitializing': 'Initializing…',
   'settings.image.ocrReady': 'Ready',
   'settings.image.ocrError': 'Error',
+
+  // ─── Image section (ImageSection.tsx) ────────────────────────────────
+  'image.ocr.enableName': 'Enable OCR (Tesseract.js)',
+  'image.ocr.enableDesc': 'Extract text from images locally. Language packs are downloaded on demand.',
+  'image.ocr.langsName': 'OCR languages',
+  'image.ocr.langsDesc': 'Select at least one. Language packs are downloaded from the tesseract.js CDN on first use.',
+  'image.ocr.statusName': 'OCR status',
+  'image.ocr.initButton': 'Initialize / download language packs',
+  'image.ocr.downloading': 'Downloading…',
+  'image.ocr.statusReady': '● Ready',
+  'image.ocr.statusFailed': '✗ Initialization failed',
+  'image.vision.enableName': 'Enable vision descriptions',
+  'image.vision.enableDesc': 'Use the LLM assigned to the "Vision" task to describe image contents.',
+  'image.maxSize.name': 'Max image size (MB)',
+  'image.maxSize.desc': 'Images larger than this are skipped to avoid blocking the indexer.',
+  'image.tip.enableExtensions': 'Tip: Notebooks do not index images by default. Enable the png/jpg/jpeg/bmp/gif extensions in the notebook editor first.',
+  'image.lang.chiSim': 'Chinese (Simplified)',
+  'image.lang.chiTra': 'Chinese (Traditional)',
+  'image.lang.eng': 'English',
+  'image.lang.jpn': 'Japanese',
+  'image.lang.kor': 'Korean',
 
   // ─── Settings - Notebooks ────────────────────────────────────────────
   'settings.notebooks.heading': 'Notebooks',
@@ -212,6 +248,78 @@ const en: Record<string, string> = {
   'chat.error.notebookEmpty': 'Notebook is empty or not indexed. Please index it first.',
   'chat.error.noChatModel': 'No model assigned to the "chat" task. Assign one in settings.',
 
+  // ─── New notebook from folder modal (NotebookFromFolderModal.tsx) ────
+  'newNotebookModal.title': 'New Notebook · {path}',
+  'newNotebookModal.created': 'Created Notebook "{name}"',
+  'newNotebookModal.createFailed': 'Create failed: {error}',
+  'newNotebookModal.name': 'Name',
+  'newNotebookModal.recursive': 'Include subfolders',
+  'newNotebookModal.indexedFormats': 'Indexed formats',
+  'newNotebookModal.create': 'Create',
+  'newNotebookModal.creating': 'Creating…',
+
+  // ─── Chunks inspector modal (ChunksInspectorModal.tsx) ───────────────
+  'chunksInspector.title': 'Chunks · {path}',
+  'chunksInspector.notIndexed': "This file isn't indexed yet (or belongs to a different notebook).",
+  'chunksInspector.errorPrefix': 'Error: {error}',
+  'chunksInspector.summary': '{count} chunk(s) · file hash: {hash}…',
+  'chunksInspector.slide': 'Slide {index}',
+  'chunksInspector.notes': 'notes',
+  'chunksInspector.sheet': 'Sheet {name}',
+  'chunksInspector.row': 'row {from}-{to}',
+  'chunksInspector.page': 'Page {from}-{to}',
+
+  // ─── Folder picker (FolderPicker.tsx) ────────────────────────────────
+  'folderPicker.empty': '— Select a folder —',
+
+  // ─── Provider card (ProviderCard.tsx) ────────────────────────────────
+  'providerCard.disabledTag': '[disabled]',
+  'providerCard.test': 'Test',
+  'providerCard.testing': 'Testing…',
+  'providerCard.deleteConfirm': 'Delete {name}?',
+
+  // ─── Office format picker (OfficeFormatPicker.tsx) ───────────────────
+  'officeFormat.legend': 'Indexed formats',
+  'officeFormat.required': '(required)',
+  'officeFormat.images': 'Images (.png, .jpg, .jpeg, .bmp, .gif)',
+  'officeFormat.imagesHint': 'Requires enabling image indexing in Settings and assigning a Vision task',
+  'officeFormat.dirtyHint': 'Changes mark the notebook as dirty — click "Reindex" to apply.',
+
+  // ─── Office options panel (OfficeOptionsPanel.tsx) ───────────────────
+  'officeOptions.legend': 'Office parsing options',
+  'officeOptions.includeNotes': 'Include PowerPoint speaker notes',
+  'officeOptions.notesConfirm': 'Enabling this will index speaker notes from all .pptx files, which may then be cited in AI answers. Continue?',
+  'officeOptions.notesHint': '⚠ Speaker notes often contain private content. When enabled they are indexed by RAG and sent to the LLM. Off by default.',
+  'officeOptions.enablePptxFirst': '(Enable the PowerPoint format first.)',
+
+  // ─── Error bars (TransientErrorBar.tsx, PersistentErrorBar.tsx) ──────
+  'errorBar.transientSummary': '⚠ {count} file(s) were not indexed this run (retry available)',
+  'errorBar.persistentSummary': '⛔ {count} file(s) failed to parse (retrying won\'t help — fix the source files)',
+  'errorBar.view': 'View',
+  'errorBar.hide': 'Hide',
+
+  // ─── PPT viewer (PptViewer.tsx) ──────────────────────────────────────
+  'ppt.empty': '(No slide content)',
+  'ppt.expandTitle': 'Click to expand',
+  'ppt.slideOf': 'Slide {current} of {total}',
+  'ppt.mermaidBadge': '📊 Diagram',
+  'ppt.mermaidTitle': 'Contains a mermaid diagram (renders after exporting to the vault)',
+  'ppt.previous': 'Previous',
+  'ppt.next': 'Next',
+
+  // ─── Mind map (MindMapViewer.tsx) ────────────────────────────────────
+  'mindMap.parseFailed': '⚠ The AI did not produce a strict outline format. Showing raw output.',
+  'mindMap.parserWarnings': 'Parser warnings ({count})',
+  'mindMap.help': 'Zoom: scroll · Pan: left-drag · Collapse: click a node (▼/▶) · Current: {scale}x · Nodes: {nodes}',
+
+  // ─── Generate menu (GenerateMenu.tsx) ────────────────────────────────
+  'generateMenu.generating': 'Generating…',
+  'generateMenu.generate': 'Generate {label}',
+
+  // ─── Chat message (ChatMessage.tsx) ──────────────────────────────────
+  'chatMessage.saveAsNote': '💾 Save as note',
+  'chatMessage.saveAsNoteTitle': 'Save this answer (with citations) as a new note in the vault',
+
   // ─── Artifacts tab ───────────────────────────────────────────────────
   'artifact.tab.label': 'Artifacts',
   'artifact.menu.generate': 'Generate',
@@ -241,6 +349,18 @@ const en: Record<string, string> = {
   'artifact.error.cancelled': 'Cancelled',
   'artifact.error.notebookNotFound': 'Notebook not found: {id}',
 
+  // ─── Artifact card (ArtifactCard.tsx) ────────────────────────────────
+  'artifactCard.kind.summary': 'Summary',
+  'artifactCard.kind.studyGuide': 'Study guide',
+  'artifactCard.kind.timeline': 'Timeline',
+  'artifactCard.kind.faq': 'FAQ',
+  'artifactCard.kind.briefing': 'Briefing',
+  'artifactCard.kind.mindMap': 'Mind map',
+  'artifactCard.kind.ppt': 'Slide deck',
+  'artifactCard.truncatedTag': '(sources truncated)',
+  'artifactCard.truncatedTitle': 'Source documents were truncated (only the leading portion was sent to the LLM). The output itself is complete. Narrow the notebook scope for fuller coverage.',
+  'artifactCard.exportTitle': 'Export to vault',
+
   // ─── Indexing / errors ───────────────────────────────────────────────
   'index.error.notebookNotFound': 'Notebook not found: {id}',
   'index.error.scan': 'Scan failed: {error}',
@@ -262,6 +382,47 @@ const en: Record<string, string> = {
   'settings.advanced.clearOk': 'Cache cleared. All notebooks marked for rebuild.',
   'settings.advanced.clearFailed': 'Clear failed: {error}',
   'settings.advanced.openDevTools': 'Open DevTools',
+
+  // ─── Plugin main (main.ts) ───────────────────────────────────────────
+  'main.error.createNotebookFirst': 'Create and select a Notebook first.',
+  'main.error.indexFileMissing': 'Index file not found (not indexed yet?).',
+  'main.exportMeta': 'Generated {time} · model {model}{truncated}',
+  'main.exportMeta.truncated': '(truncated)',
+  'main.model.alreadyDownloading': 'Model is already downloading. Please wait.',
+  'main.model.ready': 'Model is ready.',
+  'main.model.downloadComplete': 'Model download complete.',
+  'main.model.downloadFailed': 'Model download failed: {error}',
+  'main.ocr.notReady': 'OCR is not enabled, or its worker is not initialized.',
+  'main.reindexTriggered': 'Reindex triggered for {count} Notebook(s) (running in background)',
+  'main.viewDisplayText': 'Knowledge AI Chat',
+
+  // ─── Folder context menu (folderContextMenu.ts) ──────────────────────
+  'folderMenu.addAsSource': 'Add as Notebook source',
+  'folderMenu.noSubmenuFallback': 'This Obsidian version does not support submenus — add the source from Settings.',
+  'folderMenu.newNotebookFromFolder': 'New Notebook from this folder',
+  'folderMenu.openNamed': 'Open "{name}"',
+  'folderMenu.openNotebook': 'Open Notebook',
+  'folderMenu.openFailed': 'Open failed: {error}',
+  'folderMenu.reindexNamed': 'Reindex "{name}"',
+  'folderMenu.reindexMany': 'Reindex {count} related Notebooks',
+  'folderMenu.reindexFailed': 'Reindex of {name} failed: {error}',
+  'folderMenu.reindexTriggered': 'Reindex triggered for {count} Notebook(s) (running in background)',
+  'folderMenu.addedAsSource': 'Added {path} as a source of {name}',
+  'folderMenu.addFailed': 'Add failed: {error}',
+
+  // ─── File context menu (fileContextMenu.ts) ──────────────────────────
+  'fileMenu.reExtract': 'Re-extract this file',
+  'fileMenu.markedForReExtract': 'Marked {name} for re-extraction. Effective on next reindex.',
+  'fileMenu.failed': 'Failed: {error}',
+
+  // ─── Ribbon context menu (ribbonContextMenu.ts) ──────────────────────
+  'ribbonMenu.empty': '(No notebooks yet)',
+  'ribbonMenu.activeHeader': '📓 Active Notebook',
+  'ribbonMenu.switchedTo': 'Switched to {name}',
+  'ribbonMenu.reindexActive': '⚙ Reindex active Notebook',
+  'ribbonMenu.reindexAll': '🌐 Reindex all Notebooks',
+  'ribbonMenu.reindexFailed': 'Failed: {error}',
+  'ribbonMenu.settings': '⚙ Settings',
 
   // ─── Misc UI strings ─────────────────────────────────────────────────
   'embedding.coverage.title': 'Vector coverage',
