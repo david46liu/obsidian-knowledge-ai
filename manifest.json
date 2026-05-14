@@ -1,9 +1,9 @@
 {
   "id": "notebook-ai",
   "name": "Knowledge AI",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "minAppVersion": "1.4.0",
-  "description": "AI assistant for your vault: grounded RAG chat with citations, hybrid (BM25 + vector + summary) retrieval, multi-format indexing (MD/PDF/DOCX/XLSX/PPTX), image OCR/Vision, and structured artifact generation (summaries, study guides, timelines, mind maps, slide decks).",
+  "description": "AI for your vault: grounded RAG chat with citations, hybrid (BM25 + vector + summary) retrieval, multi-format indexing (MD/PDF/DOCX/XLSX/PPTX), image OCR/Vision, and artifact generation (summaries, study guides, timelines, mind maps, slide decks).",
   "author": "david4liu",
   "authorUrl": "https://github.com/david46liu",
   "isDesktopOnly": true
