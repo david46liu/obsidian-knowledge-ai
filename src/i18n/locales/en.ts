@@ -362,6 +362,7 @@ const en: Record<string, string> = {
   'artifactCard.truncatedTag': '(sources truncated)',
   'artifactCard.truncatedTitle': 'Source documents were truncated (only the leading portion was sent to the LLM). The output itself is complete. Narrow the notebook scope for fuller coverage.',
   'artifactCard.exportTitle': 'Export to vault',
+  'artifactCard.confirmDelete': 'Confirm delete?',
 
   // ─── Indexing / errors ───────────────────────────────────────────────
   'index.error.notebookNotFound': 'Notebook not found: {id}',

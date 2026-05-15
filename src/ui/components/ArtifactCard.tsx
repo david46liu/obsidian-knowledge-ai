@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Notice } from 'obsidian';
 import { t } from 'src/i18n';
 import type { Artifact } from 'src/types/artifact';
 
@@ -20,8 +21,17 @@ const KIND_LABEL_KEYS: Record<Artifact['kind'], string> = {
   'ppt': 'artifactCard.kind.ppt',
 };
 
+const DELETE_CONFIRM_TIMEOUT_MS = 4000;
+
 export function ArtifactCard({ artifact, active, onOpen, onDelete, onExport }: Props) {
   const [exporting, setExporting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  useEffect(() => {
+    if (!confirmingDelete) return;
+    const id = window.setTimeout(() => setConfirmingDelete(false), DELETE_CONFIRM_TIMEOUT_MS);
+    return () => window.clearTimeout(id);
+  }, [confirmingDelete]);
 
   const handleExport = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -29,12 +39,10 @@ export function ArtifactCard({ artifact, active, onOpen, onDelete, onExport }: P
     setExporting(true);
     try {
       const { vaultPath } = await onExport(artifact);
-      // eslint-disable-next-line no-alert
-      alert(t('artifact.exportedTo', { path: vaultPath }));
+      new Notice(t('artifact.exportedTo', { path: vaultPath }));
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      // eslint-disable-next-line no-alert
-      alert(t('artifact.exportFailed', { error: msg }));
+      new Notice(t('artifact.exportFailed', { error: msg }));
     } finally {
       setExporting(false);
     }
@@ -42,10 +50,12 @@ export function ArtifactCard({ artifact, active, onOpen, onDelete, onExport }: P
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // eslint-disable-next-line no-alert
-    if (confirm(t('artifact.deleteConfirm', { title: artifact.title }))) {
-      onDelete(artifact);
+    if (!confirmingDelete) {
+      setConfirmingDelete(true);
+      return;
     }
+    setConfirmingDelete(false);
+    onDelete(artifact);
   };
 
   return (
@@ -84,7 +94,12 @@ export function ArtifactCard({ artifact, active, onOpen, onDelete, onExport }: P
           <button onClick={handleExport} disabled={exporting} title={t('artifactCard.exportTitle')}>
             {exporting ? t('common.exporting') : t('common.export')}
           </button>
-          <button onClick={handleDelete} title={t('common.delete')}>{t('common.delete')}</button>
+          <button
+            onClick={handleDelete}
+            title={confirmingDelete ? t('artifactCard.confirmDelete') : t('artifact.deleteConfirm', { title: artifact.title })}
+          >
+            {confirmingDelete ? t('artifactCard.confirmDelete') : t('common.delete')}
+          </button>
         </div>
       </div>
     </div>

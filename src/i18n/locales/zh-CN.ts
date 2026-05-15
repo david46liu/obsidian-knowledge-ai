@@ -360,6 +360,7 @@ const zhCN: Record<string, string> = {
   'artifactCard.truncatedTag': '(资料已截断)',
   'artifactCard.truncatedTitle': '资料源被截断(只把前面一部分文档喂给 LLM)。输出本身完整,但可能漏掉后段文档。缩小 notebook 范围可获得更全的覆盖。',
   'artifactCard.exportTitle': '导出到 vault',
+  'artifactCard.confirmDelete': '再次点击确认删除',
 
   // ─── Indexing / errors ───────────────────────────────────────────────
   'index.error.notebookNotFound': '找不到 Notebook:{id}',

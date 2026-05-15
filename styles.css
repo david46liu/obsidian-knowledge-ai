@@ -85,3 +85,9 @@
   margin: 0.6em 0;
   color: var(--text-muted);
 }
+
+.notebook-ai-citation {
+  color: var(--interactive-accent);
+  text-decoration: none;
+  padding: 0 2px;
+}

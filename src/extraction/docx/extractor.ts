@@ -117,13 +117,18 @@ export const docxExtractor: Extractor = {
     // Pass BOTH fields so the same call works in vitest (Node) and in the
     // worker bundle (browser). Each version picks the field it understands and
     // ignores the other.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const input: any = { arrayBuffer: buffer };
+    interface MammothBufferInput {
+      buffer: Buffer;
+      arrayBuffer?: ArrayBuffer;
+    }
+    const input: { buffer?: Buffer; arrayBuffer?: ArrayBuffer } = { arrayBuffer: buffer };
     if (typeof Buffer !== 'undefined') {
       input.buffer = Buffer.from(buffer);
     }
 
-    const result = await mammoth.convertToHtml(input);
+    // mammoth's published type only declares the Node-style { buffer } shape;
+    // the browser bundle reads .arrayBuffer at runtime. Cast bridges the gap.
+    const result = await mammoth.convertToHtml(input as MammothBufferInput);
     const markdown = htmlToMarkdown(result.value);
     return {
       markdown,

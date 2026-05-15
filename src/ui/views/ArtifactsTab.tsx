@@ -285,9 +285,7 @@ function replaceCitations(
         a.href = '#';
         a.textContent = `[${idx}]`;
         a.title = `${citation.headingPath.join(' > ') || t('citation.untitled')} — ${citation.filePath}\n\n${citation.preview}`;
-        a.style.color = 'var(--interactive-accent)';
-        a.style.textDecoration = 'none';
-        a.style.padding = '0 2px';
+        a.className = 'notebook-ai-citation';
         a.addEventListener('click', (e) => {
           e.preventDefault();
           void openVaultFile(citation.filePath, citation.charStart);
