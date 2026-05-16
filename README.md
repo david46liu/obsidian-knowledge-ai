@@ -27,7 +27,7 @@ _Screenshots coming with v0.4.0._
 
 ### From Obsidian Community Plugins
 
-_Not yet listed — community-plugins PR pending._ Once available:
+_Passed Obsidian's automated review; the listing is live at [community.obsidian.md](https://community.obsidian.md/plugins/notebook-ai). In-app availability follows once the community registry syncs._ Once it appears in the in-app browser:
 
 1. Open Obsidian → Settings → Community plugins → Browse.
 2. Search "Knowledge AI" and install.
