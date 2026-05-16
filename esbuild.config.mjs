@@ -1,7 +1,89 @@
 import esbuild from 'esbuild';
 import process from 'process';
 import builtins from 'builtin-modules';
-import { copyFileSync, mkdirSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { promises as fsp } from 'node:fs';
+
+// Obsidian's automated review flags any `createElement("script")` as a
+// CODE OBFUSCATION error ("dynamically injecting script elements can load and
+// execute arbitrary external code"). Our only occurrences come from two
+// transitive setImmediate polyfills (`immediate`, `setimmediate`, pulled in via
+// jszip/lie -> pdfjs-dist/xlsx). Both contain a legacy IE 6–8 fallback that
+// creates a <script> element. That path is dead code in Chromium/Electron
+// (the `'onreadystatechange' in createElement('script')` feature-detect is
+// false; Obsidian uses the MessageChannel/postMessage path). This plugin
+// removes that legacy branch at build time so the bundle genuinely never
+// creates a script element — this is dead-code removal, not static-analysis
+// evasion. It throws if a pattern stops matching (dep upgrade) so a future
+// release fails loudly instead of silently shipping the shim again.
+const stripLegacyScriptShim = {
+  name: 'strip-legacy-setimmediate-script-shim',
+  setup(build) {
+    build.onLoad(
+      { filter: /[\\/]immediate[\\/]lib[\\/]index\.js$/ },
+      async (args) => {
+        const src = await fsp.readFile(args.path, 'utf8');
+        const re =
+          /\} else if \('document' in global && 'onreadystatechange' in global\.document\.createElement\('script'\)\) \{[\s\S]*?\n {2}\} else \{/;
+        if (!re.test(src)) {
+          throw new Error(
+            `strip-legacy-setimmediate-script-shim: pattern no longer matches ${args.path} (dependency 'immediate' changed?)`
+          );
+        }
+        return { contents: src.replace(re, '} else {'), loader: 'js' };
+      }
+    );
+    // jszip ships its OWN browserified copies of `immediate` and `setimmediate`
+    // inside dist/jszip.min.js (its package.json `browser` field maps the entry
+    // here, so esbuild bundles this file, not the standalone deps). Collapse
+    // each legacy IE ternary to its real setTimeout fallback branch.
+    build.onLoad(
+      { filter: /[\\/]jszip[\\/]dist[\\/]jszip\.min\.js$/ },
+      async (args) => {
+        let src = await fsp.readFile(args.path, 'utf8');
+        // immediate-style: VAR="document"in G&&"onreadystatechange"in
+        //   G.document.createElement("script")?function(){...}:function(){setTimeout(H,0)};
+        const immRe =
+          /([\w$]+=)"document"in [\w$]+&&"onreadystatechange"in [\w$]+\.document\.createElement\("script"\)\?function\(\)\{var [\w$]+=[\w$]+\.document\.createElement\("script"\);[\s\S]*?\}:(function\(\)\{setTimeout\([\w$]+,0\)\});/;
+        // setimmediate-style: G&&"onreadystatechange"in G.createElement("script")
+        //   ?(S=G.documentElement,function(e){...}):function(e){setTimeout(C,0,e)}
+        const siRe =
+          /[\w$]+&&"onreadystatechange"in [\w$]+\.createElement\("script"\)\?\([\w$]+=[\w$]+\.documentElement,function\([\w$]+\)\{var [\w$]+=[\w$]+\.createElement\("script"\);[\s\S]*?\}\):(function\([\w$]+\)\{setTimeout\([\w$]+,0,[\w$]+\)\})/;
+        if (!immRe.test(src) || !siRe.test(src)) {
+          throw new Error(
+            `strip-legacy-setimmediate-script-shim: pattern no longer matches ${args.path} (dependency 'jszip' changed?)`
+          );
+        }
+        src = src
+          .replace(immRe, '$1$2;')
+          .replace(siRe, '$1');
+        return { contents: src, loader: 'js' };
+      }
+    );
+    build.onLoad(
+      { filter: /[\\/]setimmediate[\\/]setImmediate\.js$/ },
+      async (args) => {
+        let src = await fsp.readFile(args.path, 'utf8');
+        const bodyRe =
+          /function installReadyStateChangeImplementation\(\) \{[\s\S]*?\n {4}\}/;
+        const condRe =
+          /\} else if \(doc && "onreadystatechange" in doc\.createElement\("script"\)\) \{/;
+        if (!bodyRe.test(src) || !condRe.test(src)) {
+          throw new Error(
+            `strip-legacy-setimmediate-script-shim: pattern no longer matches ${args.path} (dependency 'setimmediate' changed?)`
+          );
+        }
+        src = src
+          .replace(
+            bodyRe,
+            'function installReadyStateChangeImplementation() {\n        installSetTimeoutImplementation();\n    }'
+          )
+          .replace(condRe, '} else if (false) {');
+        return { contents: src, loader: 'js' };
+      }
+    );
+  },
+};
 
 // Ship ONNX Runtime wasm files alongside main.js — bundling can't include
 // binary .wasm assets, and relying on CDN fails in restricted networks.
@@ -48,6 +130,7 @@ const mainConfig = {
   treeShaking: true,
   outfile: 'main.js',
   minify: prod,
+  plugins: [stripLegacyScriptShim],
 };
 
 // Worker entry: browser platform, no Node externals (the worker must not depend on Node builtins).
@@ -66,6 +149,7 @@ const workerConfig = {
   treeShaking: true,
   outfile: 'extractor.worker.js',
   minify: prod,
+  plugins: [stripLegacyScriptShim],
 };
 
 // @xenova/transformers uses BigInt (ES2020+), so this worker must target es2020.
@@ -99,6 +183,7 @@ const embeddingWorkerConfig = {
   treeShaking: true,
   outfile: 'embedding.worker.js',
   minify: prod,
+  plugins: [stripLegacyScriptShim],
 };
 
 copyOnnxWasmFiles();
@@ -109,6 +194,17 @@ if (prod) {
     esbuild.build(workerConfig),
     esbuild.build(embeddingWorkerConfig),
   ]);
+  // Guard: Obsidian's review rejects any dynamic <script> creation. Fail the
+  // build if the legacy setImmediate shim leaked through (e.g. dep upgraded).
+  const scriptRe = /createElement\(\s*["'`]script["'`]\s*\)/;
+  for (const f of ['main.js', 'extractor.worker.js', 'embedding.worker.js']) {
+    if (scriptRe.test(readFileSync(f, 'utf8'))) {
+      console.error(
+        `Build guard failed: ${f} still contains a dynamic script-element creation.`
+      );
+      process.exit(1);
+    }
+  }
   process.exit(0);
 } else {
   const mainCtx = await esbuild.context(mainConfig);
